@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Таро Премиум · Оракул судьбы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: #08080f;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; font-family: 'Jost', sans-serif;
+  }
+  #root { display: flex; align-items: center; justify-content: center; }
+
+  /* ── Темы (luxe, тёмные) ── */
+  [data-theme="midnight"] {
+    --bg1:#0a0a16; --bg2:#141431;
+    --gold:#dcb86a; --gold-deep:#9c7a30; --gold-line:rgba(220,184,106,.38); --on-gold:#1a1408;
+    --text:#f3ecdc; --muted:rgba(243,236,220,.55);
+    --glow:rgba(150,130,255,.42); --glow-soft:rgba(220,184,106,.32);
+    --card-bg:#13122a; --card-glow:rgba(150,130,255,.32);
+    --back-1:#191942; --back-2:#0c0c22; --panel:rgba(255,255,255,.045);
+  }
+  [data-theme="amethyst"] {
+    --bg1:#15071c; --bg2:#2c1233;
+    --gold:#edcaa6; --gold-deep:#b07d63; --gold-line:rgba(237,202,166,.40); --on-gold:#2a1018;
+    --text:#f7ece7; --muted:rgba(247,236,231,.56);
+    --glow:rgba(196,92,216,.42); --glow-soft:rgba(237,202,166,.30);
+    --card-bg:#26123c; --card-glow:rgba(196,92,216,.30);
+    --back-1:#371748; --back-2:#1b0826; --panel:rgba(255,255,255,.05);
+  }
+  [data-theme="emerald"] {
+    --bg1:#04130d; --bg2:#0b231a;
+    --gold:#d3c18a; --gold-deep:#8f7f48; --gold-line:rgba(211,193,138,.38); --on-gold:#0a1610;
+    --text:#eef3ea; --muted:rgba(238,243,234,.55);
+    --glow:rgba(64,202,150,.40); --glow-soft:rgba(211,193,138,.30);
+    --card-bg:#0c2018; --card-glow:rgba(64,202,150,.28);
+    --back-1:#113225; --back-2:#06150f; --panel:rgba(255,255,255,.045);
+  }
+
+  .stage {
+    position:absolute; inset:0; overflow:hidden;
+    background:
+      radial-gradient(120% 90% at 50% -10%, var(--glow) 0%, transparent 45%),
+      linear-gradient(170deg, var(--bg2), var(--bg1) 60%);
+  }
+  /* плавающее золотое свечение вдоль нижней кромки */
+  .bottom-glow {
+    position:absolute; bottom:-90px; left:0; width:300px; height:260px; border-radius:50%;
+    pointer-events:none; z-index:0; filter:blur(22px);
+    background:radial-gradient(circle, var(--glow-soft) 0%, transparent 66%);
+    animation:floatGlow 16s ease-in-out infinite;
+    will-change:transform, opacity;
+  }
+  @keyframes floatGlow {
+    0%   { transform:translateX(-50px) translateY(6px) scale(1);    opacity:.5; }
+    25%  { transform:translateX(70px)  translateY(-6px) scale(1.08); opacity:.78; }
+    50%  { transform:translateX(190px) translateY(4px) scale(1);    opacity:.62; }
+    75%  { transform:translateX(70px)  translateY(-8px) scale(1.1);  opacity:.8; }
+    100% { transform:translateX(-50px) translateY(6px) scale(1);    opacity:.5; }
+  }
+
+  /* ── Анимации ── */
+  @keyframes screenIn { from { opacity:0; transform:translateY(14px) scale(.99); } to { opacity:1; transform:none; } }
+  .screen-in { animation: screenIn .5s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes pulseGlow { 0%,100%{ box-shadow:inset 0 0 0 1px var(--gold-line), 0 0 12px var(--glow-soft), 0 14px 30px rgba(0,0,0,.5);} 50%{ box-shadow:inset 0 0 0 1px var(--gold-line), 0 0 30px var(--glow-soft), 0 14px 34px rgba(0,0,0,.5);} }
+  .card-pulse { animation: pulseGlow 2.6s ease-in-out infinite; }
+  @keyframes sheen { 0%{ transform:translateX(-120%) skewX(-18deg);} 60%,100%{ transform:translateX(220%) skewX(-18deg);} }
+  .card-sheen { background:linear-gradient(90deg, transparent, rgba(255,255,255,.14), transparent); animation: sheen 4.5s ease-in-out infinite; }
+  .btn-sheen { position:absolute; inset:0; background:linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent); transform:translateX(-120%) skewX(-18deg); animation: sheen 3.6s ease-in-out 1s infinite; }
+  @keyframes float { 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-7px);} }
+  .float { animation: float 4s ease-in-out infinite; }
+  @keyframes spinSlow { to { transform:rotate(360deg);} }
+  .spin-slow { animation: spinSlow 22s linear infinite; }
+  @keyframes spinRev { to { transform:rotate(-360deg);} }
+  .spin-rev { animation: spinRev 30s linear infinite; }
+  @keyframes dotPulse { 0%,80%,100%{ opacity:.25; transform:scale(.7);} 40%{ opacity:1; transform:scale(1);} }
+  @keyframes drawLine { to { stroke-dashoffset:0; } }
+  /* ── ИИ-трактовка: загрузка ── */
+  @keyframes pulse { 0%,100%{ opacity:.4; } 50%{ opacity:1; } }
+  @keyframes fateGlow { 0%{ opacity:0; transform:scale(.4); } 35%{ opacity:1; } 100%{ opacity:0; transform:scale(1.25); } }
+  @keyframes aiSheen { 0%{ background-position:-200% 0; } 100%{ background-position:200% 0; } }
+  .ai-line { display:block; height:13px; border-radius:7px;
+    background:linear-gradient(90deg, var(--gold-line) 25%, rgba(220,184,106,.28) 50%, var(--gold-line) 75%);
+    background-size:200% 100%; animation:aiSheen 1.4s ease-in-out infinite; }
+  .ai-shimmer { background:linear-gradient(90deg, var(--muted) 30%, var(--gold) 50%, var(--muted) 70%);
+    background-size:200% 100%; -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:aiSheen 1.6s ease-in-out infinite; font-style:italic; }
+  /* переливающийся блик слева направо */
+  @keyframes sheenSweep { 0%{ transform:translateX(-180%) skewX(-16deg);} 58%,100%{ transform:translateX(360%) skewX(-16deg);} }
+  .sheen-band { position:absolute; top:-30%; left:0; width:55%; height:160%; pointer-events:none;
+    background:linear-gradient(100deg, transparent 0%, rgba(255,255,255,.16) 45%, rgba(255,255,255,.28) 50%, rgba(255,255,255,.16) 55%, transparent 100%);
+    transform:translateX(-180%) skewX(-16deg); animation:sheenSweep 4.8s ease-in-out infinite; }
+
+  /* скрытие скроллбаров внутри телефона */
+  .noscroll::-webkit-scrollbar { width:0; height:0; }
+  .noscroll { scrollbar-width:none; }
+  input, textarea { font-family:'Jost', sans-serif; }
+  ::selection { background: var(--glow-soft); }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script src="data.js?v=18"></script>
+<script src="card-desc.js?v=18"></script>
+<script src="natal-data.js?v=18"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="cards.jsx?v=18"></script>
+<script type="text/babel" src="fx.jsx?v=18"></script>
+<script type="text/babel" src="natal.jsx?v=18"></script>
+<script type="text/babel" src="screens-core.jsx?v=18"></script>
+<script type="text/babel" src="screens-extra.jsx?v=18"></script>
+<script type="text/babel" src="app.jsx?v=18"></script>
+
+<!-- direct-edit style overrides -->
+<style id="__om-edit-overrides"></style>
+</body>
+</html>

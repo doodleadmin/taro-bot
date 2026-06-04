@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Таро Премиум — Brand Identity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg1: #0a0a16;
+    --bg2: #141431;
+    --gold: #dcb86a;
+    --gold-deep: #9c7a30;
+    --gold-line: rgba(220,184,106,.38);
+    --on-gold: #1a1408;
+    --text: #f3ecdc;
+    --muted: rgba(243,236,220,.55);
+    --glow: rgba(150,130,255,.42);
+    --glow-soft: rgba(220,184,106,.32);
+    --card-bg: #13122a;
+    --back-1: #191942;
+    --panel: rgba(255,255,255,.045);
+  }
+
+  body {
+    background: var(--bg1);
+    color: var(--text);
+    font-family: 'Jost', sans-serif;
+    min-height: 100vh;
+    padding: 60px 48px;
+  }
+
+  /* ── Layout ── */
+  .page { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 64px; }
+
+  .section-label {
+    font-family: 'Jost', sans-serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--gold-line);
+  }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative;
+    padding: 80px 64px;
+    border-radius: 28px;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 50% -10%, var(--glow) 0%, transparent 50%),
+      linear-gradient(170deg, var(--bg2), var(--bg1) 70%);
+    border: 1px solid var(--gold-line);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 100%, var(--glow-soft), transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eye {
+    width: 72px; height: 72px;
+    position: relative;
+    margin-bottom: 8px;
+  }
+  .hero-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-style: italic;
+    letter-spacing: 2px;
+    color: var(--muted);
+  }
+  .hero-title {
+    font-family: 'Marcellus', serif;
+    font-size: clamp(48px, 6vw, 80px);
+    color: var(--gold);
+    line-height: 1;
+    letter-spacing: 2px;
+  }
+  .hero-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    color: var(--muted);
+    font-style: italic;
+    letter-spacing: 1px;
+  }
+  .hero-stars {
+    display: flex; gap: 10px; margin-top: 8px;
+  }
+  .star {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--gold);
+    opacity: .6;
+  }
+  .star.big { width: 6px; height: 6px; opacity: 1; }
+
+  /* ── Grid ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+  /* ── Color Palette ── */
+  .palette-block {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--gold-line);
+  }
+  .color-swatch {
+    height: 100px;
+    display: flex;
+    align-items: flex-end;
+    padding: 12px 16px;
+  }
+  .color-info {
+    background: rgba(0,0,0,.5);
+    backdrop-filter: blur(8px);
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+  .color-name { font-size: 11px; font-weight: 600; color: #fff; letter-spacing: .5px; }
+  .color-hex { font-size: 10px; color: rgba(255,255,255,.6); font-family: monospace; }
+
+  /* ── Typography ── */
+  .type-card {
+    padding: 32px;
+    border-radius: 20px;
+    border: 1px solid var(--gold-line);
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .type-specimen-xl {
+    font-family: 'Marcellus', serif;
+    font-size: 52px;
+    color: var(--gold);
+    line-height: 1;
+    letter-spacing: 1px;
+  }
+  .type-specimen-lg {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .type-specimen-body {
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+  .type-specimen-label {
+    font-family: 'Jost', sans-serif;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .type-meta {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .type-ai {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 17px;
+    color: var(--text);
+    line-height: 1.7;
+    opacity: .9;
+  }
+
+  /* ── Accent colors ── */
+  .accent-pill {
+    padding: 24px 20px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 1px solid;
+  }
+  .accent-dot {
+    width: 28px; height: 28px; border-radius: 50%;
+    margin-bottom: 4px;
+  }
+  .accent-name {
+    font-family: 'Marcellus', serif;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+  .accent-sub {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    opacity: .6;
+  }
+
+  /* ── UI Components ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 28px;
+    border-radius: 14px;
+    font-family: 'Jost', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    cursor: pointer;
+    border: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    color: var(--on-gold);
+    box-shadow: 0 8px 24px var(--glow-soft);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--gold-line);
+  }
+  .btn-panel {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--gold-line);
+  }
+  .btns-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+
+  /* ── Card ── */
+  .ui-card {
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid var(--gold-line);
+    background: var(--panel);
+  }
+
+  /* ── Tarot Card shape ── */
+  .tarot-card {
+    aspect-ratio: 2/3.4;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tarot-card-back {
+    background: linear-gradient(160deg, var(--back-1), var(--back-2));
+    border: 1px solid var(--gold-line);
+    box-shadow: 0 12px 32px rgba(0,0,0,.5), inset 0 0 0 1px var(--gold-line);
+  }
+  .tarot-card-face {
+    background: linear-gradient(160deg, #1a1838, #0e0d25);
+    border: 1px solid var(--gold-line);
+    box-shadow: 0 12px 32px rgba(0,0,0,.5);
+  }
+  .card-inner-border {
+    position: absolute;
+    inset: 7px;
+    border-radius: 9px;
+    border: 1px solid var(--gold-line);
+    pointer-events: none;
+  }
+  .card-name-tag {
+    position: absolute;
+    bottom: 12px;
+    left: 50%; transform: translateX(-50%);
+    font-family: 'Marcellus', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+  .card-rom {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    color: var(--gold);
+    font-style: italic;
+    position: absolute;
+    top: 16px;
+    left: 50%; transform: translateX(-50%);
+  }
+
+  /* ── Gradient strips ── */
+  .grad-strip {
+    height: 6px;
+    border-radius: 3px;
+    flex: 1;
+  }
+
+  /* ── Panel card ── */
+  .stat-card {
+    padding: 20px 22px;
+    border-radius: 18px;
+    background: var(--panel);
+    border: 1px solid var(--gold-line);
+  }
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .stat-value {
+    font-family: 'Marcellus', serif;
+    font-size: 36px;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* ── Themes comparison ── */
+  .theme-block {
+    padding: 28px;
+    border-radius: 20px;
+    border: 1px solid;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .theme-swatches { display: flex; gap: 6px; }
+  .theme-swatch { width: 20px; height: 20px; border-radius: 50%; border: 1px solid rgba(255,255,255,.15); }
+  .theme-name { font-family: 'Marcellus', serif; font-size: 18px; }
+  .theme-desc { font-size: 12px; opacity: .6; line-height: 1.5; }
+
+  /* ── Motion indicators ── */
+  .motion-card {
+    padding: 24px;
+    border-radius: 18px;
+    border: 1px solid var(--gold-line);
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .motion-name { font-family: 'Marcellus', serif; font-size: 16px; color: var(--gold); }
+  .motion-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .motion-bar {
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--glow), var(--gold));
+    opacity: .7;
+  }
+
+  /* ── Balance block ── */
+  .balance-card {
+    padding: 28px;
+    border-radius: 22px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, rgba(156,122,48,.2), var(--panel));
+    border: 1px solid var(--gold-line);
+  }
+
+  /* ── Navigation ── */
+  .nav-mock {
+    background: rgba(12,10,24,.6);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--gold-line);
+    border-radius: 22px;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-around;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 20px;
+  }
+  .nav-dot { width: 22px; height: 22px; border-radius: 11px; }
+  .nav-label { font-size: 10px; letter-spacing: .3px; }
+
+  /* ── Glyphs ── */
+  .glyphs-row {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 28px;
+    border-radius: 20px;
+    border: 1px solid var(--gold-line);
+    background: var(--panel);
+  }
+  .glyph-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .glyph-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+
+  /* ── Spread tags ── */
+  .spread-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid;
+    font-size: 13px;
+    font-family: 'Jost', sans-serif;
+  }
+  .spread-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 32px;
+    border-top: 1px solid var(--gold-line);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .footer-brand { font-family: 'Marcellus', serif; font-size: 20px; color: var(--gold); }
+  .footer-copy { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+  @keyframes floatGlow {
+    0%,100% { transform: translateX(-50px) scale(1); opacity: .5; }
+    50% { transform: translateX(190px) scale(1.05); opacity: .7; }
+  }
+  @keyframes sheenSweep {
+    0% { transform: translateX(-180%) skewX(-16deg); }
+    58%,100% { transform: translateX(360%) skewX(-16deg); }
+  }
+  .sheen-band {
+    position: absolute; top: -30%; left: 0; width: 55%; height: 160%; pointer-events: none;
+    background: linear-gradient(100deg, transparent 0%, rgba(255,255,255,.12) 45%, rgba(255,255,255,.22) 50%, rgba(255,255,255,.12) 55%, transparent 100%);
+    transform: translateX(-180%) skewX(-16deg);
+    animation: sheenSweep 5s ease-in-out infinite;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HERO ── -->
+  <div class="hero">
+    <div class="sheen-band"></div>
+    <svg class="hero-eye" viewBox="0 0 72 72" fill="none">
+      <ellipse cx="36" cy="36" rx="32" ry="22" stroke="#dcb86a" stroke-width="1.5" opacity=".4"/>
+      <ellipse cx="36" cy="36" rx="22" ry="14" stroke="#dcb86a" stroke-width="1" opacity=".6"/>
+      <circle cx="36" cy="36" r="10" fill="none" stroke="#dcb86a" stroke-width="1.5"/>
+      <circle cx="36" cy="36" r="4" fill="#dcb86a"/>
+      <circle cx="36" cy="36" r="2" fill="#1a1408"/>
+      <line x1="4" y1="36" x2="20" y2="36" stroke="#dcb86a" stroke-width="1" opacity=".5"/>
+      <line x1="52" y1="36" x2="68" y2="36" stroke="#dcb86a" stroke-width="1" opacity=".5"/>
+      <line x1="36" y1="4" x2="36" y2="18" stroke="#dcb86a" stroke-width="1" opacity=".3"/>
+      <line x1="36" y1="54" x2="36" y2="68" stroke="#dcb86a" stroke-width="1" opacity=".3"/>
+    </svg>
+    <div class="hero-tagline">· Оракул судьбы ·</div>
+    <div class="hero-title">Таро Премиум</div>
+    <div class="hero-sub">Telegram Mini App — AI-гадания на картах Таро</div>
+    <div class="hero-stars">
+      <div class="star"></div><div class="star big"></div><div class="star"></div>
+      <div class="star big"></div><div class="star"></div><div class="star big"></div><div class="star"></div>
+    </div>
+  </div>
+
+  <!-- ── COLOR PALETTE: MIDNIGHT ── -->
+  <div>
+    <div class="section-label">Цветовая палитра — Тема Midnight (основная)</div>
+    <div style="display:grid; grid-template-columns: repeat(8, 1fr); gap: 12px;">
+
+      <div class="palette-block">
+        <div class="color-swatch" style="background:#0a0a16;">
+          <div class="color-info"><div class="color-name">BG Primary</div><div class="color-hex">#0a0a16</div></div>
+        </div>
+      </div>
+      <div class="palette-block">
+        <div class="color-swatch" style="background:#141431;">
+          <div class="color-info"><div class="color-name">BG Secondary</div><div class="color-hex">#141431</div></div>
+        </div>
+      </div>
+      <div class="palette-block">
+        <div class="color-swatch" style="background:#13122a;">
+          <div class="color-info"><div class="color-name">Card BG</div><div class="color-hex">#13122a</div></div>
+        </div>
+      </div>
+      <div class="palette-block">
+        <div class="color-swatch" style="background:#191942;">
+          <div class="color-info"><div class="color-name">Back-1</div><div class="color-hex">#191942</div></div>
+        </div>
+      </div>
+      <div class="palette-block">
+        <div class="color-swatch" style="background:#dcb86a;">
+          <div class="color-info"><div class="color-name">Gold</div><div class="color-hex">#dcb86a</div></div>
+        </div>
+      </div>
+      <div class="palette-block">
+        <div class="color-swatch" style="background:#9c7a30;">
+          <div class="color-info"><div class="color-name">Gold Deep</div><div class="color-hex">#9c7a30</div></div>
+        </div>
+      </div>
+      <div class="palette-block">
+        <div class="color-swatch" style="background:#f3ecdc;">
+          <div class="color-info" style="background:rgba(0,0,0,.4)"><div class="color-name">Text</div><div class="color-hex">#f3ecdc</div></div>
+        </div>
+      </div>
+      <div class="palette-block">
+        <div class="color-swatch" style="background:linear-gradient(135deg,rgba(150,130,255,.42),rgba(220,184,106,.32));">
+          <div class="color-info"><div class="color-name">Glow</div><div class="color-hex">purple+gold</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── THEMES ── -->
+  <div>
+    <div class="section-label">Три темы оформления</div>
+    <div class="grid-3">
+
+      <div class="theme-block" style="background:linear-gradient(160deg,#141431,#0a0a16); border-color:rgba(220,184,106,.38);">
+        <div class="theme-swatches">
+          <div class="theme-swatch" style="background:#0a0a16;"></div>
+          <div class="theme-swatch" style="background:#141431;"></div>
+          <div class="theme-swatch" style="background:#dcb86a;"></div>
+          <div class="theme-swatch" style="background:#f3ecdc;"></div>
+          <div class="theme-swatch" style="background:rgba(150,130,255,.6);"></div>
+        </div>
+        <div class="theme-name" style="color:#dcb86a;">Midnight</div>
+        <div class="theme-desc" style="color:rgba(243,236,220,.55);">Основная тема. Глубокий тёмно-синий космос, золотые акценты, пурпурное свечение. Мистика и роскошь.</div>
+        <div style="height:3px; border-radius:2px; background:linear-gradient(90deg,rgba(150,130,255,.5),#dcb86a);"></div>
+      </div>
+
+      <div class="theme-block" style="background:linear-gradient(160deg,#2c1233,#15071c); border-color:rgba(237,202,166,.4);">
+        <div class="theme-swatches">
+          <div class="theme-swatch" style="background:#15071c;"></div>
+          <div class="theme-swatch" style="background:#2c1233;"></div>
+          <div class="theme-swatch" style="background:#edcaa6;"></div>
+          <div class="theme-swatch" style="background:#f7ece7;"></div>
+          <div class="theme-swatch" style="background:rgba(196,92,216,.7);"></div>
+        </div>
+        <div class="theme-name" style="color:#edcaa6;">Amethyst</div>
+        <div class="theme-desc" style="color:rgba(247,236,231,.56);">Пурпурно-аметистовая. Тёплые персиковые акценты, фиолетовое свечение. Магия и тайна.</div>
+        <div style="height:3px; border-radius:2px; background:linear-gradient(90deg,rgba(196,92,216,.6),#edcaa6);"></div>
+      </div>
+
+      <div class="theme-block" style="background:linear-gradient(160deg,#0b231a,#04130d); border-color:rgba(211,193,138,.38);">
+        <div class="theme-swatches">
+          <div class="theme-swatch" style="background:#04130d;"></div>
+          <div class="theme-swatch" style="background:#0b231a;"></div>
+          <div class="theme-swatch" style="background:#d3c18a;"></div>
+          <div class="theme-swatch" style="background:#eef3ea;"></div>
+          <div class="theme-swatch" style="background:rgba(64,202,150,.6);"></div>
+        </div>
+        <div class="theme-name" style="color:#d3c18a;">Emerald</div>
+        <div class="theme-desc" style="color:rgba(238,243,234,.55);">Изумрудно-зелёная. Тёмный лес, золото-оливковые акценты, зелёное свечение. Природа и мудрость.</div>
+        <div style="height:3px; border-radius:2px; background:linear-gradient(90deg,rgba(64,202,150,.6),#d3c18a);"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── TYPOGRAPHY ── -->
+  <div>
+    <div class="section-label">Типографика</div>
+    <div class="grid-2" style="align-items:start;">
+
+      <div style="display:flex; flex-direction:column; gap:20px;">
+        <div class="type-card">
+          <div class="type-meta">Marcellus — заголовки, числа, названия карт</div>
+          <div class="type-specimen-xl">Таро</div>
+          <div style="font-family:'Marcellus',serif; font-size:32px; color:var(--gold);">XXII · Дурак</div>
+          <div style="font-family:'Marcellus',serif; font-size:20px; color:var(--text);">Кельтский крест</div>
+          <div style="font-family:'Marcellus',serif; font-size:40px; color:var(--gold); letter-spacing:1px;">300 ₽</div>
+        </div>
+
+        <div class="type-card">
+          <div class="type-meta">Cormorant Garamond — трактовки, описания, поэтический текст</div>
+          <div class="type-specimen-lg">"Карты говорят о трансформации и новом пути"</div>
+          <div class="type-ai">Эта карта в позиции «Прошлое» указывает на завершение важного цикла в вашей жизни. Перемены, которых вы так боялись, несут в себе семена нового начала.</div>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:20px;">
+        <div class="type-card">
+          <div class="type-meta">Jost — интерфейс, кнопки, лейблы</div>
+          <div style="font-family:'Jost',sans-serif; font-size:24px; font-weight:600; color:var(--text);">Открыть расклад</div>
+          <div style="font-family:'Jost',sans-serif; font-size:16px; font-weight:400; color:var(--muted);">Выберите расклад и задайте вопрос</div>
+          <div style="font-family:'Jost',sans-serif; font-size:10px; letter-spacing:2.5px; text-transform:uppercase; color:var(--muted);">Баланс · История · Профиль</div>
+          <div style="font-family:'Jost',sans-serif; font-size:12px; font-weight:500; color:var(--gold);">+15 ₽ бонус · Бесплатно сегодня</div>
+        </div>
+
+        <div class="type-card" style="gap:16px;">
+          <div class="type-meta">Размерная шкала</div>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; align-items:baseline; gap:16px;">
+              <span style="font-family:'Marcellus',serif; font-size:46px; color:var(--gold); line-height:1;">Aa</span>
+              <span style="font-size:10px; color:var(--muted);">46px · Display</span>
+            </div>
+            <div style="display:flex; align-items:baseline; gap:16px;">
+              <span style="font-family:'Marcellus',serif; font-size:28px; color:var(--text); line-height:1;">Aa</span>
+              <span style="font-size:10px; color:var(--muted);">28px · Heading</span>
+            </div>
+            <div style="display:flex; align-items:baseline; gap:16px;">
+              <span style="font-family:'Cormorant Garamond',serif; font-size:18px; font-style:italic; color:var(--text); line-height:1;">Aa</span>
+              <span style="font-size:10px; color:var(--muted);">18px · Subheading italic</span>
+            </div>
+            <div style="display:flex; align-items:baseline; gap:16px;">
+              <span style="font-size:14px; color:var(--muted); line-height:1;">Aa</span>
+              <span style="font-size:10px; color:var(--muted);">14px · Body</span>
+            </div>
+            <div style="display:flex; align-items:baseline; gap:16px;">
+              <span style="font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted);">AA</span>
+              <span style="font-size:10px; color:var(--muted);">10px · Label uppercase</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── ACCENT COLORS ── -->
+  <div>
+    <div class="section-label">Акцентные цвета раскладов</div>
+    <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap: 16px;">
+
+      <div class="accent-pill" style="background:rgba(95,208,160,.08); border-color:rgba(95,208,160,.4);">
+        <div class="accent-dot" style="background:#5fd0a0; box-shadow:0 4px 14px rgba(95,208,160,.4);"></div>
+        <div class="accent-name" style="color:#7fe0b4;">Карта дня</div>
+        <div class="accent-sub">#5fd0a0</div>
+        <div class="accent-sub">Зелёный · Рост</div>
+      </div>
+
+      <div class="accent-pill" style="background:rgba(220,184,106,.08); border-color:rgba(220,184,106,.4);">
+        <div class="accent-dot" style="background:#dcb86a; box-shadow:0 4px 14px rgba(220,184,106,.4);"></div>
+        <div class="accent-name" style="color:#dcb86a;">Да или Нет · Год</div>
+        <div class="accent-sub">#dcb86a</div>
+        <div class="accent-sub">Золото · Ответ</div>
+      </div>
+
+      <div class="accent-pill" style="background:rgba(224,106,154,.08); border-color:rgba(224,106,154,.4);">
+        <div class="accent-dot" style="background:#e06a9a; box-shadow:0 4px 14px rgba(224,106,154,.4);"></div>
+        <div class="accent-name" style="color:#e06a9a;">Отношения</div>
+        <div class="accent-sub">#e06a9a</div>
+        <div class="accent-sub">Розовый · Любовь</div>
+      </div>
+
+      <div class="accent-pill" style="background:rgba(106,167,224,.08); border-color:rgba(106,167,224,.4);">
+        <div class="accent-dot" style="background:#6aa7e0; box-shadow:0 4px 14px rgba(106,167,224,.4);"></div>
+        <div class="accent-name" style="color:#6aa7e0;">Ситуация</div>
+        <div class="accent-sub">#6aa7e0</div>
+        <div class="accent-sub">Синий · Ясность</div>
+      </div>
+
+      <div class="accent-pill" style="background:rgba(196,106,224,.08); border-color:rgba(196,106,224,.4);">
+        <div class="accent-dot" style="background:#c46ae0; box-shadow:0 4px 14px rgba(196,106,224,.4);"></div>
+        <div class="accent-name" style="color:#c46ae0;">Совместимость</div>
+        <div class="accent-sub">#c46ae0</div>
+        <div class="accent-sub">Пурпур · Связь</div>
+      </div>
+
+      <div class="accent-pill" style="background:rgba(205,174,94,.08); border-color:rgba(205,174,94,.4);">
+        <div class="accent-dot" style="background:#cdae5e; box-shadow:0 4px 14px rgba(205,174,94,.4);"></div>
+        <div class="accent-name" style="color:#cdae5e;">Деньги</div>
+        <div class="accent-sub">#cdae5e</div>
+        <div class="accent-sub">Золото тёмное</div>
+      </div>
+
+      <div class="accent-pill" style="background:rgba(184,155,232,.08); border-color:rgba(184,155,232,.4);">
+        <div class="accent-dot" style="background:#b89be8; box-shadow:0 4px 14px rgba(184,155,232,.4);"></div>
+        <div class="accent-name" style="color:#b89be8;">Кельтский · Натал</div>
+        <div class="accent-sub">#b89be8</div>
+        <div class="accent-sub">Лаванда · Тайна</div>
+      </div>
+
+      <div style="grid-column: span 3;">
+        <div style="padding:20px; border-radius:16px; border:1px solid var(--gold-line); background:var(--panel); display:flex; align-items:center; gap:16px; flex-wrap:wrap; height:100%;">
+          <div style="font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; width:100%; margin-bottom:4px;">Градиентные акценты</div>
+          <div style="flex:1; height:8px; border-radius:4px; background:linear-gradient(90deg,#5fd0a0,#dcb86a,#e06a9a,#c46ae0,#b89be8);"></div>
+          <div style="flex:1; height:8px; border-radius:4px; background:linear-gradient(90deg,rgba(150,130,255,.6),rgba(220,184,106,.8));"></div>
+          <div style="flex:1; height:8px; border-radius:4px; background:linear-gradient(135deg,#9c7a30,#dcb86a,#f3ecdc);"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── UI COMPONENTS ── -->
+  <div>
+    <div class="section-label">UI-компоненты</div>
+    <div class="grid-2" style="align-items:start;">
+
+      <div style="display:flex; flex-direction:column; gap:20px;">
+
+        <!-- Buttons -->
+        <div class="ui-card">
+          <div class="type-meta" style="margin-bottom:16px;">Кнопки</div>
+          <div class="btns-row">
+            <button class="btn btn-gold" style="position:relative; overflow:hidden;">
+              <span style="position:absolute;top:-30%;left:0;width:55%;height:160%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.3),transparent);transform:skewX(-16deg);pointer-events:none;"></span>
+              🔮 Сделать расклад
+            </button>
+            <button class="btn btn-ghost">Пополнить</button>
+            <button class="btn btn-panel" style="padding:12px 16px; font-size:13px;">← Назад</button>
+          </div>
+          <div class="btns-row" style="margin-top:12px;">
+            <button class="btn btn-gold" style="width:100%; font-size:16px; padding:18px;">Довериться случаю ✦</button>
+          </div>
+        </div>
+
+        <!-- Balance -->
+        <div class="balance-card">
+          <div class="sheen-band" style="opacity:.6;"></div>
+          <div style="position:relative;">
+            <div style="font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted);">Баланс</div>
+            <div style="font-family:'Marcellus',serif; font-size:48px; color:var(--gold); line-height:1.1; margin-top:4px;">300 ₽</div>
+            <div style="font-size:12px; color:var(--muted); margin-top:6px;">+45 ₽ бонус к пополнению</div>
+          </div>
+        </div>
+
+        <!-- Nav -->
+        <div style="padding: 16px; border-radius:18px; border:1px solid var(--gold-line); background:var(--panel);">
+          <div class="type-meta" style="margin-bottom:14px;">Нижняя навигация</div>
+          <div class="nav-mock">
+            <div class="nav-item">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+              <span class="nav-label" style="color:var(--gold); font-weight:600;">Главная</span>
+            </div>
+            <div class="nav-item" style="opacity:.5;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5">
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/>
+              </svg>
+              <span class="nav-label" style="color:var(--muted);">История</span>
+            </div>
+            <div class="nav-item" style="opacity:.5;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="1.5">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+              <span class="nav-label" style="color:var(--muted);">Профиль</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:20px;">
+
+        <!-- Stats -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="stat-card">
+            <div class="stat-label">Раскладов всего</div>
+            <div class="stat-value">247</div>
+            <div class="stat-sub">+12 сегодня</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Оборот</div>
+            <div class="stat-value" style="color:#7fe0b4;">4 820 ₽</div>
+            <div class="stat-sub">340 ₽ сегодня</div>
+          </div>
+        </div>
+
+        <!-- Spreads tags -->
+        <div class="ui-card">
+          <div class="type-meta" style="margin-bottom:14px;">Расклады</div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <div class="spread-tag" style="border-color:rgba(95,208,160,.4); color:#7fe0b4;">
+              <div class="spread-dot" style="background:#5fd0a0;"></div> Карта дня · 0 ₽
+            </div>
+            <div class="spread-tag" style="border-color:rgba(220,184,106,.4); color:#dcb86a;">
+              <div class="spread-dot" style="background:#dcb86a;"></div> Да или Нет · 15 ₽
+            </div>
+            <div class="spread-tag" style="border-color:rgba(224,106,154,.4); color:#e06a9a;">
+              <div class="spread-dot" style="background:#e06a9a;"></div> Отношения · 15 ₽
+            </div>
+            <div class="spread-tag" style="border-color:rgba(106,167,224,.4); color:#6aa7e0;">
+              <div class="spread-dot" style="background:#6aa7e0;"></div> Ситуация · 15 ₽
+            </div>
+            <div class="spread-tag" style="border-color:rgba(196,106,224,.4); color:#c46ae0;">
+              <div class="spread-dot" style="background:#c46ae0;"></div> Совместимость · 15 ₽
+            </div>
+            <div class="spread-tag" style="border-color:rgba(184,155,232,.4); color:#b89be8;">
+              <div class="spread-dot" style="background:#b89be8;"></div> Кельтский крест · 30 ₽
+            </div>
+            <div class="spread-tag" style="border-color:rgba(184,155,232,.4); color:#b89be8;">
+              <div class="spread-dot" style="background:#b89be8;"></div> Натальная карта · 100 ₽
+            </div>
+          </div>
+        </div>
+
+        <!-- Transaction list -->
+        <div class="ui-card">
+          <div class="type-meta" style="margin-bottom:12px;">История трат</div>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; gap:12px; padding:12px; border-radius:12px; background:rgba(255,255,255,.03); border:1px solid var(--gold-line);">
+              <div style="width:34px;height:34px;border-radius:10px;background:rgba(95,208,160,.14);border:1px solid rgba(95,208,160,.3);display:grid;place-items:center;color:#7fe0b4;font-size:16px;">+</div>
+              <div style="flex:1;"><div style="font-size:14px; color:var(--text);">Пополнение · Пакет 300 ₽</div><div style="font-size:11px; color:var(--muted);">Сегодня, 12:34</div></div>
+              <div style="font-family:'Marcellus',serif; color:#7fe0b4;">+345 ₽</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px; padding:12px; border-radius:12px; background:rgba(255,255,255,.03); border:1px solid var(--gold-line);">
+              <div style="width:34px;height:34px;border-radius:10px;background:rgba(220,184,106,.1);border:1px solid rgba(220,184,106,.3);display:grid;place-items:center;color:var(--gold);font-size:16px;">−</div>
+              <div style="flex:1;"><div style="font-size:14px; color:var(--text);">Расклад · Отношения</div><div style="font-size:11px; color:var(--muted);">Вчера, 21:10</div></div>
+              <div style="font-family:'Marcellus',serif; color:var(--gold);">−15 ₽</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CARD SHAPES ── -->
+  <div>
+    <div class="section-label">Карты Таро — форм-фактор и стиль</div>
+    <div style="display:flex; gap:28px; align-items:flex-end; justify-content:center; flex-wrap:wrap; padding:40px; border-radius:24px; border:1px solid var(--gold-line); background:radial-gradient(ellipse at 50% 0%, rgba(150,130,255,.15), transparent 60%), var(--panel);">
+
+      <!-- Card back - small -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div class="tarot-card tarot-card-back" style="width:80px;">
+          <div class="card-inner-border"></div>
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <circle cx="18" cy="18" r="14" stroke="#dcb86a" stroke-width=".8" opacity=".5"/>
+            <circle cx="18" cy="18" r="8" stroke="#dcb86a" stroke-width=".8" opacity=".7"/>
+            <circle cx="18" cy="18" r="3" fill="#dcb86a" opacity=".8"/>
+            <line x1="18" y1="4" x2="18" y2="32" stroke="#dcb86a" stroke-width=".6" opacity=".3"/>
+            <line x1="4" y1="18" x2="32" y2="18" stroke="#dcb86a" stroke-width=".6" opacity=".3"/>
+          </svg>
+        </div>
+        <div style="font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); text-align:center;">Рубашка</div>
+      </div>
+
+      <!-- Card face - medium -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div class="tarot-card tarot-card-face" style="width:110px;">
+          <div class="card-inner-border"></div>
+          <div class="card-rom">I</div>
+          <svg width="52" height="52" viewBox="0 0 52 52" fill="none" style="margin-top:16px;">
+            <circle cx="26" cy="26" r="18" stroke="#dcb86a" stroke-width="1" opacity=".4"/>
+            <circle cx="26" cy="26" r="8" fill="none" stroke="#dcb86a" stroke-width="1.2" opacity=".8"/>
+            <line x1="26" y1="8" x2="26" y2="44" stroke="#dcb86a" stroke-width=".8" opacity=".3"/>
+            <line x1="8" y1="26" x2="44" y2="26" stroke="#dcb86a" stroke-width=".8" opacity=".3"/>
+            <circle cx="26" cy="26" r="4" fill="#dcb86a" opacity=".7"/>
+            <circle cx="26" cy="26" r="2" fill="#0a0a16"/>
+          </svg>
+          <div class="card-name-tag">Маг</div>
+        </div>
+        <div style="font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); text-align:center;">Лицо · Арт</div>
+      </div>
+
+      <!-- Card face - large -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div class="tarot-card tarot-card-face" style="width:150px; box-shadow: 0 0 40px rgba(150,130,255,.3), 0 16px 40px rgba(0,0,0,.6); animation: pulseCard 3s ease-in-out infinite;">
+          <div class="card-inner-border" style="border-color:rgba(220,184,106,.5);"></div>
+          <div class="card-rom" style="font-size:36px; opacity:.7;">0</div>
+          <svg width="72" height="72" viewBox="0 0 72 72" fill="none" style="margin-top:20px;">
+            <circle cx="36" cy="36" r="28" stroke="#dcb86a" stroke-width=".8" opacity=".25"/>
+            <circle cx="36" cy="36" r="20" stroke="#dcb86a" stroke-width="1" opacity=".4"/>
+            <circle cx="36" cy="36" r="12" stroke="#dcb86a" stroke-width="1.2" opacity=".6"/>
+            <circle cx="36" cy="36" r="5" fill="#dcb86a" opacity=".9"/>
+            <circle cx="36" cy="36" r="2.5" fill="#0a0a16"/>
+            <line x1="36" y1="8" x2="36" y2="64" stroke="#dcb86a" stroke-width=".8" opacity=".2"/>
+            <line x1="8" y1="36" x2="64" y2="36" stroke="#dcb86a" stroke-width=".8" opacity=".2"/>
+            <line x1="16" y1="16" x2="56" y2="56" stroke="#dcb86a" stroke-width=".6" opacity=".15"/>
+            <line x1="56" y1="16" x2="16" y2="56" stroke="#dcb86a" stroke-width=".6" opacity=".15"/>
+          </svg>
+          <div class="card-name-tag" style="font-size:11px; letter-spacing:2.5px;">Дурак</div>
+        </div>
+        <div style="font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); text-align:center;">Лицо · Избранная</div>
+      </div>
+
+      <!-- Card reversed -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div class="tarot-card tarot-card-face" style="width:110px; transform:rotate(180deg); opacity:.8;">
+          <div class="card-inner-border" style="border-color:rgba(224,106,154,.4);"></div>
+          <div style="font-family:'Cormorant Garamond',serif; font-size:28px; color:#e06a9a; font-style:italic; position:absolute; top:16px; left:50%; transform:translateX(-50%);">XIII</div>
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="margin-top:16px;">
+            <path d="M24 8L36 32H12L24 8Z" stroke="#e06a9a" stroke-width="1" fill="none" opacity=".6"/>
+            <circle cx="24" cy="32" r="6" stroke="#e06a9a" stroke-width="1" fill="none" opacity=".7"/>
+            <circle cx="24" cy="22" r="3" fill="#e06a9a" opacity=".5"/>
+          </svg>
+          <div style="position:absolute; bottom:12px; left:50%; transform:translateX(-50%); font-family:'Marcellus',serif; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#e06a9a; white-space:nowrap;">Смерть</div>
+        </div>
+        <div style="font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); text-align:center;">Перевёрнутая</div>
+      </div>
+
+      <!-- Card back - large -->
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div class="tarot-card tarot-card-back" style="width:110px;">
+          <div class="card-inner-border"></div>
+          <svg width="60" height="80" viewBox="0 0 60 80" fill="none">
+            <rect x="8" y="8" width="44" height="64" rx="4" stroke="#dcb86a" stroke-width=".8" opacity=".3"/>
+            <circle cx="30" cy="40" r="18" stroke="#dcb86a" stroke-width=".8" opacity=".4"/>
+            <circle cx="30" cy="40" r="10" stroke="#dcb86a" stroke-width=".8" opacity=".5"/>
+            <circle cx="30" cy="40" r="4" fill="#dcb86a" opacity=".6"/>
+            <line x1="30" y1="22" x2="30" y2="58" stroke="#dcb86a" stroke-width=".6" opacity=".25"/>
+            <line x1="12" y1="40" x2="48" y2="40" stroke="#dcb86a" stroke-width=".6" opacity=".25"/>
+            <line x1="17" y1="27" x2="43" y2="53" stroke="#dcb86a" stroke-width=".5" opacity=".15"/>
+            <line x1="43" y1="27" x2="17" y2="53" stroke="#dcb86a" stroke-width=".5" opacity=".15"/>
+          </svg>
+        </div>
+        <div style="font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); text-align:center;">Рубашка · Крупно</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── EFFECTS & MOTION ── -->
+  <div>
+    <div class="section-label">Визуальные эффекты и анимации</div>
+    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+
+      <div class="motion-card">
+        <div class="motion-name">screenIn</div>
+        <div class="motion-desc">Вход экрана: fade + translateY(14px) → 0. 0.5s cubic-bezier(.2,.7,.2,1)</div>
+        <div class="motion-bar" style="width:70%;"></div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">floatGlow</div>
+        <div class="motion-desc">Плавающее свечение снизу. Бесконечный drift по X. 16s ease-in-out</div>
+        <div class="motion-bar" style="width:100%; background:linear-gradient(90deg,var(--glow-soft),transparent);"></div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">sheenSweep</div>
+        <div class="motion-desc">Переливающийся блик на картах и кнопках. Diagonal sweep. 4.8s</div>
+        <div class="motion-bar" style="width:55%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent);"></div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">pulseGlow</div>
+        <div class="motion-desc">Пульсирующее золотое свечение вокруг карты. 2.6s ease-in-out</div>
+        <div class="motion-bar" style="width:100%; animation:none; box-shadow:0 0 8px var(--glow-soft); height:6px; background:var(--gold-line);"></div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">fateGlow</div>
+        <div class="motion-desc">Вспышка «Довериться случаю»: scale(.4)→scale(1.25), opacity 0→1→0</div>
+        <div class="motion-bar" style="background:radial-gradient(circle,var(--gold),transparent);"></div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">aiSheen</div>
+        <div class="motion-desc">Скелетон загрузки ИИ-трактовки. Gradient shift. 1.4s infinite</div>
+        <div class="motion-bar" style="background:linear-gradient(90deg,var(--gold-line) 25%,rgba(220,184,106,.28) 50%,var(--gold-line) 75%); background-size:200%;"></div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">spinSlow</div>
+        <div class="motion-desc">Вращение натального колеса. 22s linear infinite. Внутренний — spinRev 30s</div>
+        <div class="motion-bar" style="width:40%; background:var(--gold);"></div>
+      </div>
+      <div class="motion-card">
+        <div class="motion-name">dotPulse</div>
+        <div class="motion-desc">Три точки ожидания ИИ на ThinkingScreen. Scale + opacity 0.25→1</div>
+        <div class="motion-bar" style="width:30%; border-radius:3px;"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── GRID RADII SHADOWS ── -->
+  <div>
+    <div class="section-label">Скругления · Тени · Паттерны отступов</div>
+    <div style="display:flex; gap:20px; align-items:center; flex-wrap:wrap; padding:32px; border-radius:20px; border:1px solid var(--gold-line); background:var(--panel);">
+
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="width:56px;height:56px;border-radius:8px;border:1px solid var(--gold-line);background:var(--back-1);"></div>
+        <div style="font-size:10px; color:var(--muted);">8px</div>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="width:56px;height:56px;border-radius:12px;border:1px solid var(--gold-line);background:var(--back-1);"></div>
+        <div style="font-size:10px; color:var(--muted);">12px</div>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="width:56px;height:56px;border-radius:16px;border:1px solid var(--gold-line);background:var(--back-1);"></div>
+        <div style="font-size:10px; color:var(--muted);">16px</div>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="width:56px;height:56px;border-radius:20px;border:1px solid var(--gold-line);background:var(--back-1);"></div>
+        <div style="font-size:10px; color:var(--muted);">20px</div>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="width:56px;height:56px;border-radius:28px;border:1px solid var(--gold-line);background:var(--back-1);"></div>
+        <div style="font-size:10px; color:var(--muted);">28px</div>
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <div style="width:56px;height:56px;border-radius:50%;border:1px solid var(--gold-line);background:var(--back-1);"></div>
+        <div style="font-size:10px; color:var(--muted);">50%</div>
+      </div>
+
+      <div style="width:1px; height:80px; background:var(--gold-line); margin:0 16px;"></div>
+
+      <div style="display:flex; flex-direction:column; gap:12px; flex:1; min-width:200px;">
+        <div style="font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:4px;">Тени</div>
+        <div style="padding:14px 18px; border-radius:14px; background:var(--back-1); box-shadow:0 4px 14px rgba(0,0,0,.4); font-size:13px; color:var(--muted);">Базовая тёмная</div>
+        <div style="padding:14px 18px; border-radius:14px; background:var(--back-1); box-shadow:0 8px 24px var(--glow-soft); font-size:13px; color:var(--text);">Золотое свечение</div>
+        <div style="padding:14px 18px; border-radius:14px; background:var(--back-1); box-shadow:0 0 32px var(--glow), 0 14px 30px rgba(0,0,0,.5); font-size:13px; color:var(--text);">Пурпурное свечение</div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:10px; flex:1; min-width:200px;">
+        <div style="font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:4px;">Паддинги</div>
+        <div style="font-size:12px; color:var(--muted); line-height:2;">
+          Экран: <span style="color:var(--gold);">20px</span> горизонтально<br>
+          Карточки: <span style="color:var(--gold);">16–20px</span><br>
+          Gap между блоками: <span style="color:var(--gold);">12–22px</span><br>
+          Хит-таргеты кнопок: <span style="color:var(--gold);">≥44px</span><br>
+          Safe-area top: <span style="color:var(--gold);">100px min</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <div class="footer">
+    <div style="display:flex; justify-content:center; gap:6px; margin-bottom:8px;">
+      <div class="star big" style="background:var(--gold);"></div>
+      <div class="star" style="background:var(--gold); opacity:.4;"></div>
+      <div class="star big" style="background:var(--gold);"></div>
+    </div>
+    <div class="footer-brand">Таро Премиум · Brand Identity</div>
+    <div class="footer-copy">Telegram Mini App · Dark Mystical Luxe · 2026</div>
+    <div style="display:flex; justify-content:center; gap:24px; margin-top:12px; flex-wrap:wrap;">
+      <span style="font-size:11px; color:var(--muted);">Marcellus · Cormorant Garamond · Jost</span>
+      <span style="font-size:11px; color:var(--muted);">#0a0a16 · #dcb86a · #f3ecdc</span>
+      <span style="font-size:11px; color:var(--muted);">Midnight · Amethyst · Emerald</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

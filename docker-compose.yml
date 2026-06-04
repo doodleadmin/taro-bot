@@ -1,0 +1,63 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: taro
+      POSTGRES_PASSWORD: taro_secret
+      POSTGRES_DB: taro_premium
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taro"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://taro:taro_secret@postgres:5432/taro_premium
+      NODE_ENV: production
+      PORT: 3000
+      # Override these via .env or environment in production:
+      BOT_TOKEN: ${BOT_TOKEN}
+      WEBAPP_URL: ${WEBAPP_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai}
+      LLM_API_KEY: ${LLM_API_KEY}
+      LLM_MODEL: ${LLM_MODEL:-gpt-4o-mini}
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-telegram}
+      TELEGRAM_PAYMENT_TOKEN: ${TELEGRAM_PAYMENT_TOKEN:-}
+      YUKASSA_SHOP_ID: ${YUKASSA_SHOP_ID:-}
+      YUKASSA_SECRET_KEY: ${YUKASSA_SECRET_KEY:-}
+      CDN_BASE_URL: ${CDN_BASE_URL:-}
+    ports:
+      - "3000:3000"
+    volumes:
+      # Static card images served by API
+      - ./cards:/app/cards:ro
+    command: >
+      sh -c "npx prisma migrate deploy && node dist/index.js"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    environment:
+      VITE_API_URL: ${WEBAPP_URL:-}
+      VITE_CDN_BASE_URL: ${CDN_BASE_URL:-}
+    ports:
+      - "8080:80"
+
+volumes:
+  postgres_data:

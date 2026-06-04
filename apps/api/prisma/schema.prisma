@@ -1,0 +1,123 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DeckId {
+  mansion
+  wood
+  classic
+}
+
+enum TransactionType {
+  topup
+  spend
+  free
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+}
+
+model User {
+  id              Int           @id @default(autoincrement())
+  tgId            String        @unique
+  firstName       String
+  username        String?
+  photoUrl        String?
+  balance         Int           @default(0)
+  deck            DeckId        @default(mansion)
+  freeUsedDate    String?
+  dayRevealedDate String?
+  // Воронка: шаг (0-4), null = не стартовала
+  funnelStep      Int           @default(0)
+  funnelDoneAt    DateTime?     // когда воронка завершилась
+  // Последний активный день (для daily push)
+  lastActiveDate  String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  transactions    Transaction[]
+  readings        Reading[]
+  payments        Payment[]
+  pushLogs        PushLog[]
+}
+
+model Transaction {
+  id        Int             @id @default(autoincrement())
+  userId    Int
+  type      TransactionType
+  title     String
+  amount    Int
+  createdAt DateTime        @default(now())
+
+  user      User            @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Reading {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  spreadId       String
+  question       String   @default("")
+  cards          Json
+  interpretation Json
+  extra          Json?
+  createdAt      DateTime @default(now())
+
+  user           User     @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Payment {
+  id                Int           @id @default(autoincrement())
+  userId            Int
+  provider          String
+  providerPaymentId String        @unique
+  packageId         String
+  amount            Int
+  bonus             Int
+  status            PaymentStatus @default(pending)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  user              User          @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+// Лог отправленных пушей (идемпотентность)
+model PushLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  type      String   // 'funnel_1' | 'funnel_2' | 'funnel_3' | 'funnel_4' | 'daily' | 'broadcast'
+  sentAt    DateTime @default(now())
+  ok        Boolean  @default(true)
+
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, type, sentAt]) // для daily пушей добавляем дату в type
+  @@index([userId])
+  @@index([type])
+}
+
+// Рассылки от администратора
+model Broadcast {
+  id        Int      @id @default(autoincrement())
+  text      String
+  buttonLabel String?
+  buttonUrl   String?
+  sentCount Int      @default(0)
+  failCount Int      @default(0)
+  createdAt DateTime @default(now())
+  adminId   String   // tgId администратора
+}

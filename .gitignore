@@ -1,0 +1,27 @@
+node_modules/
+dist/
+.env
+.env.local
+*.local
+
+# pnpm
+.pnpm-store/
+
+# Build outputs
+apps/web/dist/
+apps/api/dist/
+
+# Prisma
+apps/api/prisma/migrations/*.sql.bak
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

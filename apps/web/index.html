@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- viewport-fit=cover нужен для iOS safe area под нотчем -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Таро Премиум · Оракул судьбы</title>
+    <!-- Telegram SDK грузим первым — до всего остального -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+      // Запрашиваем fullscreen и expand ДО монтирования React,
+      // чтобы не было моргания. Безопасно — SDK уже загружен выше.
+      (function () {
+        try {
+          var tg = window.Telegram && window.Telegram.WebApp;
+          if (tg) {
+            tg.expand();                       // развернуть на всю доступную высоту
+            if (tg.requestFullscreen) {
+              tg.requestFullscreen();          // запросить true-fullscreen (TG ≥ 7.7)
+            }
+            // Цвет статусбара/хедера под тему приложения
+            if (tg.setHeaderColor) tg.setHeaderColor('#0a0a16');
+            if (tg.setBackgroundColor) tg.setBackgroundColor('#0a0a16');
+            if (tg.setBottomBarColor) tg.setBottomBarColor('#0a0a16');
+          }
+        } catch (e) { /* ignore — older clients */ }
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
