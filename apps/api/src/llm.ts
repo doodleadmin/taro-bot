@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 import Anthropic from '@anthropic-ai/sdk';
 import { config } from './config.js';
 import { ARCANA, DECKS, cardTitle, cardKnowledge, domainForSpread } from '@taro/shared';
-import type { DrawnCard, Spread, AiInterpretation, DeckId, PairExtra } from '@taro/shared';
+import type { DrawnCard, Spread, AiInterpretation, DeckId, PairExtra, NatalResult } from '@taro/shared';
 
 // Card descriptions — loaded once
 // We import the raw desc data here (duplicates the JS source but keeps server self-contained)
@@ -156,6 +156,50 @@ async function callAnthropic(prompt: string, maxTokens = 2048): Promise<string> 
   const block = resp.content[0];
   if (!block || block.type !== 'text') return '';
   return block.text;
+}
+
+const ZODIAC_RU = ['Овен','Телец','Близнецы','Рак','Лев','Дева','Весы','Скорпион','Стрелец','Козерог','Водолей','Рыбы'];
+const PLANET_RU: Record<string, string> = {
+  sun: 'Солнце', moon: 'Луна', mercury: 'Меркурий', venus: 'Венера',
+  mars: 'Марс', jupiter: 'Юпитер', saturn: 'Сатурн',
+};
+
+export async function getDailyInterpretation(cardName: string, cardKey: string, cardUp: string): Promise<string> {
+  const prompt = `Ты — таролог, который каждое утро пишет короткое послание на день своим подписчикам.
+
+Сегодняшняя карта дня: ${cardName}. Ключевое слово: ${cardKey}. Основное значение: ${cardUp}.
+
+Напиши живое вдохновляющее сообщение-настрой на сегодняшний день (3–4 предложения): что несёт эта карта, на что обратить внимание, какую энергию использовать. Пиши тепло, образно, в настоящем времени. Не пересказывай учебное значение карты — дай личное послание для дня. Отвечай только текстом сообщения, без заголовков.`;
+  try {
+    const raw = config.llmProvider === 'anthropic'
+      ? await callAnthropic(prompt, 512)
+      : await callOpenAI(prompt, 512);
+    return raw.trim() || cardUp;
+  } catch {
+    return cardUp;
+  }
+}
+
+export async function getNatalInterpretation(natalData: NatalResult, name: string, question: string): Promise<string> {
+  const planetLines = natalData.planets
+    .map(p => `${PLANET_RU[p.key] ?? p.key} в ${ZODIAC_RU[p.sign] ?? p.sign}`)
+    .join(', ');
+  const ascSign = ZODIAC_RU[natalData.asc] ?? natalData.asc;
+
+  const prompt = `Ты — профессиональный астролог, специализирующийся на натальных картах. Клиент: ${name}.
+Натальная карта: Солнце в ${ZODIAC_RU[natalData.sun]}, Луна в ${ZODIAC_RU[natalData.moon]}, Асцендент ${ascSign}.
+Все планеты: ${planetLines}.
+${question ? `Вопрос клиента: "${question}"` : 'Сделай общий разбор личности и жизненного пути.'}
+
+Напиши живой профессиональный разбор натальной карты (8–12 предложений): характер, сильные стороны, вызовы, ключевые жизненные темы. Если есть вопрос — ответь на него через призму карты. Пиши тепло, конкретно, без шаблонных фраз. Обращайся по имени. Отвечай только текстом разбора, без заголовков и списков.`;
+  try {
+    const raw = config.llmProvider === 'anthropic'
+      ? await callAnthropic(prompt, 1024)
+      : await callOpenAI(prompt, 1024);
+    return raw.trim() || `Натальная карта ${name} построена. Солнце в ${ZODIAC_RU[natalData.sun]}, Луна в ${ZODIAC_RU[natalData.moon]}.`;
+  } catch {
+    return `Натальная карта ${name} построена. Солнце в ${ZODIAC_RU[natalData.sun]}, Луна в ${ZODIAC_RU[natalData.moon]}.`;
+  }
 }
 
 export async function getAiInterpretation(
