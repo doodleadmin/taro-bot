@@ -6,7 +6,7 @@ import { Ornament } from '../components/ui/Ornament';
 import { DeckContext } from '../context/DeckContext';
 import { LAYOUTS } from '@taro/shared';
 import { cardTitle } from '@taro/shared';
-import type { Spread, AiInterpretation, Card } from '@taro/shared';
+import type { Spread, AiInterpretation, Card, SpreadId } from '@taro/shared';
 
 const POSITION_HINTS: Record<string, string> = {
   'Прошлое':'Корни уходят в прошлое:', 'Настоящее':'Прямо сейчас:', 'Будущее':'Впереди вас ждёт:',
@@ -138,9 +138,10 @@ interface ReadingScreenProps {
   interpretation?: AiInterpretation;
   onBack: () => void;
   onNew: () => void;
+  onStart: (id: SpreadId) => void;
 }
 
-export function ReadingScreen({ spread, question, draw, interpretation, onBack, onNew }: ReadingScreenProps) {
+export function ReadingScreen({ spread, question, draw, interpretation, onBack, onNew, onStart }: ReadingScreenProps) {
   const [revealed, setRevealed] = useState(0);
   const [active, setActive] = useState(0);
   const [zoom, setZoom] = useState<number | null>(null);
@@ -161,7 +162,7 @@ export function ReadingScreen({ spread, question, draw, interpretation, onBack, 
 
   const cardText = (d: DrawItem, i: number): React.ReactNode => {
     if (aiCards[i]) return aiCards[i];
-    if (aiLoading) return <span className="ai-shimmer">Маг вглядывается в карту…</span>;
+    if (aiLoading) return <span className="ai-shimmer">Карты раскрывают смысл…</span>;
     const hint = POSITION_HINTS[spread.positions[i]] || '';
     return (
       <>
@@ -245,11 +246,11 @@ export function ReadingScreen({ spread, question, draw, interpretation, onBack, 
               ))}
             </div>
 
-            {/* Слово мага */}
+            {/* Итоговое послание */}
             <div style={{ marginTop:16, padding:'18px 18px', borderRadius:18, position:'relative', overflow:'hidden',
               background:'linear-gradient(160deg, var(--back-1), transparent)', border:'1px solid var(--gold-line)' }}>
               <div style={{ display:'flex', alignItems:'center', gap:7, marginBottom:8 }}>
-                <span style={{ fontSize:11, letterSpacing:2, textTransform:'uppercase', color:'var(--gold)' }}>Слово мага</span>
+                <span style={{ fontSize:11, letterSpacing:2, textTransform:'uppercase', color:'var(--gold)' }}>Послание карт</span>
                 {aiLoading && (
                   <span style={{ width:5, height:5, borderRadius:3, background:'var(--gold)',
                     boxShadow:'0 0 6px var(--gold)', animation:'pulse 1s infinite' }} />
@@ -266,6 +267,21 @@ export function ReadingScreen({ spread, question, draw, interpretation, onBack, 
                   lineHeight:1.55, fontStyle:'italic' }}>{aiSummary}</div>
               )}
             </div>
+
+            {spread.group === 'simple' && (
+              <div style={{ marginTop:14, padding:'16px 16px', borderRadius:18,
+                background:'linear-gradient(135deg, rgba(220,184,106,.18), rgba(184,155,232,.10))',
+                border:'1px solid var(--gold-line)' }}>
+                <div style={{ fontSize:11, letterSpacing:2, textTransform:'uppercase', color:'var(--gold)', marginBottom:7 }}>
+                  Хотите глубже?</div>
+                <div style={{ fontFamily:'Cormorant Garamond, serif', fontSize:16, color:'var(--text)', lineHeight:1.4 }}>
+                  Малый расклад дал направление. Большой расклад покажет скрытые причины, влияния и вероятный итог.</div>
+                <div style={{ display:'flex', gap:9, marginTop:13 }}>
+                  <GoldButton style={{ flex:1 }} onClick={() => onStart('celtic')}>Кельтский крест</GoldButton>
+                  <GoldButton variant="ghost" style={{ flex:1 }} onClick={() => onStart('year')}>Прогноз на год</GoldButton>
+                </div>
+              </div>
+            )}
 
             <div style={{ display:'flex', gap:10, marginTop:18 }}>
               <GoldButton variant="ghost" style={{ flex:1 }} onClick={onBack}>В историю</GoldButton>

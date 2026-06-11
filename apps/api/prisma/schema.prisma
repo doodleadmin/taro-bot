@@ -33,7 +33,10 @@ model User {
   username        String?
   photoUrl        String?
   balance         Int           @default(0)
+  isAdmin         Boolean       @default(false)
   deck            DeckId        @default(mansion)
+  // Первые 3 любых карточных расклада — бесплатно, затем 1 любой в день.
+  freeReadingsUsed Int          @default(0)
   freeUsedDate    String?
   dayRevealedDate String?
   // Воронка: шаг (0-4), null = не стартовала

@@ -27,7 +27,7 @@ export function ThinkingScreen({ question: _question }: ThinkingScreenProps) {
         </div>
       </div>
       <div style={{ fontFamily:'Marcellus, serif', fontSize:22, color:'var(--text)', marginTop:34 }}>
-        Маг формирует предсказание</div>
+        Карты складываются в ответ</div>
       <div style={{ fontFamily:'Cormorant Garamond, serif', fontStyle:'italic', fontSize:17, color:'var(--gold)',
         marginTop:8, minHeight:24, transition:'.3s' }}>{lines[li]}</div>
       <div style={{ display:'flex', gap:7, marginTop:22 }}>

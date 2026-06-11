@@ -161,33 +161,48 @@ export default function App() {
   const dayCardIndex = parseInt(today.replace(/-/g, ''), 10) % ARCANA.length;
   const dayCard = ARCANA[dayCardIndex];
   const [dayRevealed, setDayRevealed] = useState(false);
+  const [dayInterpretation, setDayInterpretation] = useState('');
 
   useEffect(() => {
-    if (user) setDayRevealed(user.dayRevealedToday);
+    if (!user) return;
+    setDayRevealed(user.dayRevealedToday);
+    if (user.dayRevealedToday) {
+      api.getDailyCard()
+        .then(resp => setDayInterpretation(resp.interpretation ?? ''))
+        .catch(() => {});
+    }
   }, [user]);
 
   const revealDay = async () => {
-    try { await api.revealDailyCard(); } catch { /* no-op */ }
-    setDayRevealed(true);
+    setDayRevealed(true);  // Flip card immediately, interpretation loads in background
+    try {
+      const resp = await api.revealDailyCard();
+      setDayInterpretation(resp.interpretation ?? '');
+    } catch { /* no-op — keep card revealed without interpretation */ }
   };
 
-  const balance = user?.balance ?? 0;
+  const isAdmin = user?.isAdmin ?? false;
+  const balance = isAdmin ? Number.POSITIVE_INFINITY : user?.balance ?? 0;
   const freeAvailable = user ? user.freeAvailableToday : true;
+  const introFreeRemaining = user?.introFreeRemaining ?? 3;
+  const dailyFreeAvailableToday = user?.dailyFreeAvailableToday ?? false;
   const deck = user?.deck ?? 'mansion';
 
   const startSpread = useCallback(async (spreadId: SpreadId) => {
     const spread = SPREADS[spreadId];
     if (!spread) return;
 
+    const canUseFree = spread.price > 0 && freeAvailable && !isAdmin;
+
     // Check balance locally first
-    if (spread.price > 0 && !spread.free1card && balance < spread.price) {
+    if (spread.price > 0 && !canUseFree && balance < spread.price) {
       setRoute({ name:'topup', need: spread });
       flash(`Не хватает ${spread.price - balance} ₽ для расклада`);
       return;
     }
 
     if (spreadId === 'natal') {
-      if (balance < spread.price) {
+      if (!canUseFree && balance < spread.price) {
         setRoute({ name:'topup', need: spread });
         flash(`Не хватает ${spread.price - balance} ₽`);
         return;
@@ -204,14 +219,14 @@ export default function App() {
     }
 
     if (spreadId === 'love' || spreadId === 'match') {
-      setFlow(f => ({ ...f, spread }));
+      setFlow(f => ({ ...f, spread, paidWith: canUseFree ? 'free' : 'paid' }));
       setRoute({ name:'pairform', need: spread });
       return;
     }
 
-    setFlow(f => ({ ...f, spread }));
+    setFlow(f => ({ ...f, spread, paidWith: canUseFree ? 'free' : 'paid' }));
     setRoute({ name:'question', need: spread });
-  }, [balance, flash]);
+  }, [balance, flash, freeAvailable, isAdmin]);
 
   const onQuestion = useCallback((q: string) => {
     setFlow(f => ({ ...f, q }));
@@ -233,8 +248,14 @@ export default function App() {
         card: ARCANA.find(c => c.n === dc.n)!,
         reversed: dc.reversed,
       }));
-      setFlow(f => ({ ...f, draw, interpretation: resp.interpretation, readingId: resp.id, paidWith:'paid' }));
-      setUser(u => u ? { ...u, balance: resp.balance } : u);
+      setFlow(f => ({ ...f, draw, interpretation: resp.interpretation, readingId: resp.id, paidWith: resp.paidWith ?? 'paid' }));
+      setUser(u => u ? {
+        ...u,
+        balance: resp.balance,
+        freeAvailableToday: resp.freeAvailableToday ?? u.freeAvailableToday,
+        introFreeRemaining: resp.introFreeRemaining ?? u.introFreeRemaining,
+        dailyFreeAvailableToday: resp.dailyFreeAvailableToday ?? u.dailyFreeAvailableToday,
+      } : u);
 
       // Add to history
       const newEntry: HistoryEntry = {
@@ -312,7 +333,9 @@ export default function App() {
     screen = (
       <HomeScreen
         balance={balance} freeAvailable={freeAvailable}
+        introFreeRemaining={introFreeRemaining} dailyFreeAvailableToday={dailyFreeAvailableToday}
         dayCard={dayCard} dayRevealed={dayRevealed}
+        dayInterpretation={dayInterpretation}
         onRevealDay={revealDay} onStart={startSpread}
         onBalance={() => setRoute({ name:'profile' })}
       />
@@ -339,7 +362,10 @@ export default function App() {
     screen = (
       <NatalScreen
         onBack={() => setRoute({ name:'home' })}
-        onBalanceUpdate={b => setUser(u => u ? {...u, balance: b} : u)}
+        onBalanceUpdate={async b => {
+          setUser(u => u ? {...u, balance: b} : u);
+          await refreshUser().catch(() => undefined);
+        }}
       />
     );
   } else if (route.name === 'pairform') {
@@ -375,6 +401,7 @@ export default function App() {
         interpretation={flow.interpretation}
         onBack={() => setRoute({ name:'history', fromHistory: route.fromHistory })}
         onNew={() => setRoute({ name:'home' })}
+        onStart={startSpread}
       />
     );
   }
@@ -401,4 +428,3 @@ export default function App() {
     </DeckContext.Provider>
   );
 }
-

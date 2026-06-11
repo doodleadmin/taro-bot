@@ -13,7 +13,7 @@ interface Stats {
 
 interface AdminUser {
   id: number; tgId: string; firstName: string; username: string | null;
-  balance: number; deck: string; funnelStep: number;
+  balance: number; isAdmin: boolean; deck: string; funnelStep: number;
   createdAt: string;
   _count: { readings: number; payments: number };
 }
@@ -109,6 +109,8 @@ function Users() {
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
+  const [newAdminTgId, setNewAdminTgId] = useState('');
+  const [adminStatus, setAdminStatus] = useState<string | null>(null);
 
   const load = useCallback((p: number, s: string) => {
     setLoading(true);
@@ -121,10 +123,44 @@ function Users() {
 
   useEffect(() => { load(0, ''); }, []);
 
+  const addAdmin = async () => {
+    const tgId = newAdminTgId.trim();
+    if (!tgId) return;
+    setAdminStatus(null);
+    try {
+      await apiFetch('/api/admin/admins', {
+        method: 'POST',
+        body: JSON.stringify({ tgId }),
+      });
+      setAdminStatus('✅ Администратор добавлен');
+      setNewAdminTgId('');
+      load(0, search);
+    } catch {
+      setAdminStatus('❌ Не удалось добавить администратора');
+    }
+  };
+
   return (
     <div style={{ padding:'0 16px' }}>
       <div style={{ fontFamily:'Marcellus, serif', fontSize:22, color:'var(--text)', margin:'16px 0 12px' }}>
         Пользователи <span style={{ fontSize:14, color:'var(--muted)' }}>({total})</span>
+      </div>
+
+      <div style={{ padding:'12px 14px', borderRadius:14, background:'var(--panel)',
+        border:'1px solid var(--gold-line)', marginBottom:14 }}>
+        <div style={{ fontSize:12, color:'var(--gold)', marginBottom:8 }}>Добавить администратора по Telegram ID</div>
+        <div style={{ display:'flex', gap:8 }}>
+          <input value={newAdminTgId} onChange={e => setNewAdminTgId(e.target.value)}
+            placeholder="Например: 1113930428"
+            style={{ flex:1, background:'var(--back-1)', border:'1px solid var(--gold-line)',
+              borderRadius:10, padding:'10px 14px', color:'var(--text)', fontSize:14, outline:'none' }} />
+          <button onClick={addAdmin} disabled={!newAdminTgId.trim()} style={{ padding:'10px 14px', borderRadius:10, border:'none',
+            background:'var(--gold)', color:'var(--on-gold)', cursor:newAdminTgId.trim() ? 'pointer' : 'default',
+            opacity:newAdminTgId.trim() ? 1 : .5, fontSize:13, fontWeight:600 }}>
+            Добавить
+          </button>
+        </div>
+        {adminStatus && <div style={{ fontSize:12, color:adminStatus.startsWith('✅') ? '#7fe0b4' : '#e06a9a', marginTop:8 }}>{adminStatus}</div>}
       </div>
 
       <div style={{ display:'flex', gap:8, marginBottom:14 }}>
@@ -150,11 +186,12 @@ function Users() {
                   {u.firstName}</span>
                 {u.username && <span style={{ fontSize:12, color:'var(--gold)', marginLeft:8 }}>@{u.username}</span>}
               </div>
-              <span style={{ fontFamily:'Marcellus, serif', fontSize:18, color:'#7fe0b4' }}>{u.balance} ₽</span>
+              <span style={{ fontFamily:'Marcellus, serif', fontSize:18, color:'#7fe0b4' }}>{u.isAdmin ? '∞' : u.balance} ₽</span>
             </div>
             <div style={{ display:'flex', gap:12, marginTop:5 }}>
               <span style={{ fontSize:11, color:'var(--muted)' }}>ID: {u.tgId}</span>
               <span style={{ fontSize:11, color:'var(--muted)' }}>🃏 {u._count.readings} раскл.</span>
+              {u.isAdmin && <span style={{ fontSize:11, color:'var(--gold)' }}>Админ</span>}
               <span style={{ fontSize:11, color:'var(--muted)' }}>
                 Воронка: шаг {u.funnelStep}</span>
             </div>

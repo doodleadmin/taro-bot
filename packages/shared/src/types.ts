@@ -78,8 +78,11 @@ export interface UserProfile {
   username: string | null;
   photoUrl: string | null;
   balance: number;
+  isAdmin?: boolean;
   deck: DeckId;
   freeAvailableToday: boolean;
+  introFreeRemaining?: number;
+  dailyFreeAvailableToday?: boolean;
   dayRevealedToday: boolean;
   createdAt: string;
 }
@@ -110,6 +113,7 @@ export interface NatalExtra {
   date: string;
   time?: string;
   place?: string;
+  question?: string;
 }
 
 export interface ReadingResponse {
@@ -119,6 +123,10 @@ export interface ReadingResponse {
   cards: DrawnCard[];
   interpretation: AiInterpretation;
   balance: number;
+  paidWith?: 'free' | 'paid';
+  freeAvailableToday?: boolean;
+  introFreeRemaining?: number;
+  dailyFreeAvailableToday?: boolean;
   createdAt: string;
 }
 

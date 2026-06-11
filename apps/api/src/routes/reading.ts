@@ -1,9 +1,32 @@
 import crypto from 'node:crypto';
 import type { FastifyPluginAsync } from 'fastify';
 import { prisma } from '../db.js';
+import { isAdmin } from '../config.js';
 import { SPREADS, ARCANA } from '@taro/shared';
 import type { DrawnCard, SpreadId, PairExtra } from '@taro/shared';
-import { getAiInterpretation } from '../llm.js';
+import { getAiInterpretation, getDailyInterpretation, getNatalInterpretation } from '../llm.js';
+
+const INTRO_FREE_READINGS = 3;
+
+type FreeUserState = {
+  freeReadingsUsed: number;
+  freeUsedDate: string | null;
+};
+
+function isFreeEligibleSpread(spread: typeof SPREADS[keyof typeof SPREADS]): boolean {
+  // Бесплатная квота действует на платные расклады. Карта дня бесплатна отдельно и квоту не расходует.
+  return spread.price > 0;
+}
+
+function getFreeState(user: FreeUserState, today: string) {
+  const introFreeRemaining = Math.max(0, INTRO_FREE_READINGS - user.freeReadingsUsed);
+  const dailyFreeAvailableToday = introFreeRemaining === 0 && user.freeUsedDate !== today;
+  return {
+    introFreeRemaining,
+    dailyFreeAvailableToday,
+    freeAvailableToday: introFreeRemaining > 0 || dailyFreeAvailableToday,
+  };
+}
 
 function drawCards(count: number, reversible = true): DrawnCard[] {
   // Cryptographically random draw
@@ -40,13 +63,29 @@ export const readingRoutes: FastifyPluginAsync = async (app) => {
     // Atomic charge + draw in transaction
     const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUniqueOrThrow({ where: { id: userId } });
+      const admin = isAdmin(user.tgId) || user.isAdmin;
 
       let paidWith: 'free' | 'paid';
+      const freeState = getFreeState(user, today);
+      const freeEligible = isFreeEligibleSpread(spread);
 
       if (spread.price === 0) {
         paidWith = 'paid';
-      } else if (spread.free1card && user.freeUsedDate !== today) {
-        // Use free daily slot
+      } else if (admin) {
+        // Администраторы имеют бесконечный баланс: не списываем деньги и не блокируем расклады.
+        paidWith = 'paid';
+      } else if (freeEligible && freeState.introFreeRemaining > 0) {
+        // Первые 3 любых платных расклада — бесплатно.
+        await tx.user.update({ where: { id: userId }, data: { freeReadingsUsed: { increment: 1 } } });
+        await tx.transaction.create({ data: {
+          userId,
+          type: 'free',
+          title: `${spread.title} · подарок новичка`,
+          amount: 0,
+        }});
+        paidWith = 'free';
+      } else if (freeEligible && freeState.dailyFreeAvailableToday) {
+        // После стартовых 3: один любой платный расклад бесплатно раз в день.
         await tx.user.update({ where: { id: userId }, data: { freeUsedDate: today } });
         await tx.transaction.create({ data: {
           userId,
@@ -107,6 +146,8 @@ export const readingRoutes: FastifyPluginAsync = async (app) => {
       cards: result.cards,
       interpretation,
       balance: updatedUser.balance,
+      paidWith: result.paidWith,
+      ...getFreeState(updatedUser, today),
       createdAt: reading.createdAt.toISOString(),
     });
   });
@@ -137,9 +178,14 @@ export const readingRoutes: FastifyPluginAsync = async (app) => {
     const today = new Date().toISOString().slice(0, 10);
     const cardIndex = parseInt(today.replace(/-/g, ''), 10) % ARCANA.length;
     const card = ARCANA[cardIndex];
+    // If already revealed today, return cached interpretation (may be fallback if LLM failed)
+    const interpretation = user.dayRevealedDate === today
+      ? await getDailyInterpretation(card.name, card.key, card.up)
+      : undefined;
     return reply.send({
       card,
       revealed: user.dayRevealedDate === today,
+      interpretation,
     });
   });
 
@@ -150,8 +196,8 @@ export const readingRoutes: FastifyPluginAsync = async (app) => {
     await prisma.user.update({ where: { id: userId }, data: { dayRevealedDate: today } });
     const cardIndex = parseInt(today.replace(/-/g, ''), 10) % ARCANA.length;
     const card = ARCANA[cardIndex];
-    // Return card with a simple interpretation
-    const interpretation = card.up;
+    // LLM interpretation with daily cache
+    const interpretation = await getDailyInterpretation(card.name, card.key, card.up);
     return reply.send({ card, revealed: true, interpretation });
   });
 
@@ -171,34 +217,61 @@ export const readingRoutes: FastifyPluginAsync = async (app) => {
 
   // POST /api/natal — natal chart reading
   app.post<{
-    Body: { name: string; date: string; time?: string; place?: string };
+    Body: { name: string; date: string; time?: string; place?: string; question?: string };
   }>('/api/natal', { onRequest: [app.authenticate] }, async (req, reply) => {
     const { userId } = req.user as { userId: number };
-    const { name, date, time, place } = req.body;
+    const { name, date, time, place, question = '' } = req.body;
 
     const spread = SPREADS['natal'];
     const NATAL_PRICE = spread.price; // 100 ₽
+    const today = new Date().toISOString().slice(0, 10);
 
-    const result = await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUniqueOrThrow({ where: { id: userId } });
-      if (user.balance < NATAL_PRICE) {
+      const admin = isAdmin(user.tgId) || user.isAdmin;
+      const freeState = getFreeState(user, today);
+      const useIntroFree = !admin && freeState.introFreeRemaining > 0;
+      const useDailyFree = !admin && !useIntroFree && freeState.dailyFreeAvailableToday;
+
+      if (!admin && !useIntroFree && !useDailyFree && user.balance < NATAL_PRICE) {
         throw Object.assign(new Error('Insufficient balance'), {
           code: 'INSUFFICIENT_BALANCE',
           shortage: NATAL_PRICE - user.balance,
         });
       }
-      await tx.user.update({ where: { id: userId }, data: { balance: { decrement: NATAL_PRICE } } });
-      await tx.transaction.create({ data: {
-        userId,
-        type: 'spend',
-        title: 'Натальная карта',
-        amount: -NATAL_PRICE,
-      }});
+      if (useIntroFree) {
+        await tx.user.update({ where: { id: userId }, data: { freeReadingsUsed: { increment: 1 } } });
+        await tx.transaction.create({ data: {
+          userId,
+          type: 'free',
+          title: 'Натальная карта · подарок новичка',
+          amount: 0,
+        }});
+      } else if (useDailyFree) {
+        await tx.user.update({ where: { id: userId }, data: { freeUsedDate: today } });
+        await tx.transaction.create({ data: {
+          userId,
+          type: 'free',
+          title: 'Натальная карта · бесплатно',
+          amount: 0,
+        }});
+      } else if (!admin) {
+        await tx.user.update({ where: { id: userId }, data: { balance: { decrement: NATAL_PRICE } } });
+        await tx.transaction.create({ data: {
+          userId,
+          type: 'spend',
+          title: 'Натальная карта',
+          amount: -NATAL_PRICE,
+        }});
+      }
       return user;
     });
 
     const { computeNatal } = await import('@taro/shared');
     const natalData = computeNatal({ name, date, time, place });
+
+    // Get LLM natal interpretation
+    const natalInterpretation = await getNatalInterpretation(natalData, name, question);
 
     const updatedUser = await prisma.user.findUniqueOrThrow({ where: { id: userId } });
 
@@ -206,17 +279,19 @@ export const readingRoutes: FastifyPluginAsync = async (app) => {
       data: {
         userId,
         spreadId: 'natal',
-        question: `Натальная карта: ${name}`,
+        question: question ? `Натальная карта: ${name}. Вопрос: ${question}` : `Натальная карта: ${name}`,
         cards: [] as object,
-        interpretation: { cards: [], summary: '' } as object,
-        extra: { type: 'natal', name, date, time, place } as object,
+        interpretation: { cards: [natalInterpretation], summary: '' } as object,
+        extra: { type: 'natal', name, date, time, place, question } as object,
       },
     });
 
     return reply.send({
       id: reading.id,
       natalData,
+      natalInterpretation,
       balance: updatedUser.balance,
+      ...getFreeState(updatedUser, today),
       createdAt: reading.createdAt.toISOString(),
     });
   });

@@ -29,6 +29,8 @@ interface TopUpScreenProps {
 export function TopUpScreen({ balance, need, onBack, onBuy }: TopUpScreenProps) {
   const [sel, setSel] = useState('t300');
   const pkg = TOPUP.find(p => p.id === sel)!;
+  const balanceLabel = Number.isFinite(balance) ? `${balance} ₽` : '∞ ₽';
+  const shortage = need && Number.isFinite(balance) ? Math.max(0, need.price - balance) : 0;
 
   return (
     <div className="noscroll" style={{ flex:1, overflowY:'auto', padding:'8px 20px 120px' }}>
@@ -39,7 +41,7 @@ export function TopUpScreen({ balance, need, onBack, onBuy }: TopUpScreenProps) 
 
       <div style={{ textAlign:'center', margin:'16px 0 6px' }}>
         <div style={{ fontSize:11, letterSpacing:2, textTransform:'uppercase', color:'var(--muted)' }}>Текущий баланс</div>
-        <div style={{ fontFamily:'Marcellus, serif', fontSize:38, color:'var(--gold)', marginTop:3 }}>{balance} ₽</div>
+        <div style={{ fontFamily:'Marcellus, serif', fontSize:38, color:'var(--gold)', marginTop:3 }}>{balanceLabel}</div>
       </div>
 
       {need && (
@@ -47,7 +49,7 @@ export function TopUpScreen({ balance, need, onBack, onBuy }: TopUpScreenProps) 
           background:'rgba(224,106,154,.12)', border:'1px solid rgba(224,106,154,.45)' }}>
           <span style={{ color:'#e06a9a', flexShrink:0 }}><Lock /></span>
           <span style={{ fontSize:13.5, color:'var(--text)' }}>
-            Для «{need.title}» нужно ещё <b style={{ color:'var(--gold)' }}>{Math.max(0, need.price - balance)} ₽</b>
+            Для «{need.title}» нужно ещё <b style={{ color:'var(--gold)' }}>{shortage} ₽</b>
           </span>
         </div>
       )}

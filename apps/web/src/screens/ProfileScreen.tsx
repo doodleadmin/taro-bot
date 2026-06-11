@@ -61,6 +61,7 @@ function DeckThumb({ deck }: { deck: typeof DECKS[number] }) {
 }
 
 export function ProfileScreen({ user, balance, txns, history, freeAvailable, deck, onDeck, onTopup }: ProfileScreenProps) {
+  const balanceLabel = Number.isFinite(balance) ? `${balance} ₽` : '∞ ₽';
   const fav = (() => {
     const cnt: Record<string, number> = {};
     history.forEach(h => cnt[h.spread] = (cnt[h.spread] || 0) + 1);
@@ -92,7 +93,7 @@ export function ProfileScreen({ user, balance, txns, history, freeAvailable, dec
           <div>
             <div style={{ fontSize:11, letterSpacing:2, textTransform:'uppercase', color:'var(--muted)' }}>Баланс</div>
             <div style={{ fontFamily:'Marcellus, serif', fontSize:40, color:'var(--gold)', lineHeight:1.05, marginTop:4 }}>
-              {balance} ₽</div>
+              {balanceLabel}</div>
           </div>
           <GoldButton onClick={onTopup} style={{ padding:'12px 20px' }}>Пополнить</GoldButton>
         </div>

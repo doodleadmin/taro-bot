@@ -87,10 +87,10 @@ export function changeDeck(deck: string): Promise<{ deck: string }> {
 }
 
 export function createNatal(
-  name: string, date: string, time?: string, place?: string,
+  name: string, date: string, time?: string, place?: string, question?: string,
 ) {
-  return request<{ id: number; natalData: unknown; balance: number; createdAt: string }>(
-    'POST', '/api/natal', { name, date, time, place },
+  return request<{ id: number; natalData: unknown; natalInterpretation?: string; balance: number; createdAt: string }>(
+    'POST', '/api/natal', { name, date, time, place, question },
   );
 }
 

@@ -9,8 +9,9 @@ async function requireAdmin(req: FastifyRequest, reply: FastifyReply) {
   } catch {
     return reply.status(401).send({ error: 'Unauthorized' });
   }
-  const { tgId } = req.user as { tgId: string };
-  if (!isAdmin(tgId)) {
+  const { userId, tgId } = req.user as { userId: number; tgId: string };
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { isAdmin: true } });
+  if (!isAdmin(tgId) && !user?.isAdmin) {
     return reply.status(403).send({ error: 'Forbidden' });
   }
 }
@@ -82,7 +83,7 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
           take: pageSize,
           select: {
             id: true, tgId: true, firstName: true, username: true,
-            balance: true, deck: true, funnelStep: true,
+            balance: true, isAdmin: true, deck: true, funnelStep: true,
             createdAt: true, updatedAt: true,
             _count: { select: { readings: true, payments: true } },
           },
@@ -91,6 +92,32 @@ export const adminRoutes: FastifyPluginAsync = async (app) => {
       ]);
 
       return reply.send({ users, total, page, pageSize });
+    },
+  );
+
+  // ── POST /api/admin/admins ──────────────────────────────────────────────────
+  app.post<{ Body: { tgId: string } }>(
+    '/api/admin/admins',
+    { onRequest: [requireAdmin] },
+    async (req, reply) => {
+      const tgId = String(req.body.tgId ?? '').trim();
+      if (!/^\d+$/.test(tgId)) return reply.status(400).send({ error: 'Valid tgId required' });
+
+      const user = await prisma.user.upsert({
+        where: { tgId },
+        create: {
+          tgId,
+          firstName: `Admin ${tgId}`,
+          username: null,
+          photoUrl: null,
+          balance: 0,
+          isAdmin: true,
+        },
+        update: { isAdmin: true },
+        select: { id: true, tgId: true, firstName: true, username: true, balance: true, isAdmin: true },
+      });
+
+      return reply.send({ ok: true, user });
     },
   );
 

@@ -189,6 +189,36 @@ function planetName(key: string): string {
   return names[key] || key;
 }
 
+function buildLocalNatalInterpretation(chart: NatalResult, form: { name: string; question: string }) {
+  const sunS = SIGNS[chart.sun] || SIGNS[0];
+  const moonS = SIGNS[chart.moon] || SIGNS[0];
+  const ascS = SIGNS[chart.asc] || SIGNS[0];
+  const question = form.question.trim();
+  const name = form.name.trim() || 'вы';
+  const elements = Object.entries(chart.elements)
+    .sort((a, b) => b[1] - a[1]);
+  const topElement = elements[0]?.[0] as keyof typeof EL_RU | undefined;
+  const weakElement = elements[elements.length - 1]?.[0] as keyof typeof EL_RU | undefined;
+  const topElementText = topElement ? EL_RU[topElement] : 'ваша ведущая стихия';
+  const weakElementText = weakElement ? EL_RU[weakElement] : 'зона роста';
+
+  if (question) {
+    return `Ответ на ваш вопрос
+${name}, по вашему вопросу «${question}» карта показывает: решение лучше искать не в резком рывке, а в сочетании вашей внутренней сути, эмоциональной реакции и того образа, который вы транслируете людям. Солнце в знаке ${sunS.n} говорит, что главный ресурс сейчас — ${SUN_TEXT[chart.sun].split('.')[0].toLowerCase()}. Луна в ${moonS.n} показывает, как вы эмоционально проживаете эту ситуацию, а Асцендент в ${ascS.n} подсказывает, какое впечатление вы производите и какую роль берёте на себя. Вероятнее всего, вопрос будет развиваться лучше, если вы не будете действовать только из тревоги или ожидания чужой реакции, а выберете одну понятную линию поведения и удержите её.
+
+Почему карта показывает именно это
+В вашей карте сильнее всего звучит стихия ${topElementText}: она показывает, через какой способ действий вам проще всего получить результат. Если это Огонь — важны смелость и инициатива; если Земля — конкретный план и практические шаги; если Воздух — разговор, анализ и новая информация; если Вода — интуиция, чувства и бережность к себе. Более слабая зона — ${weakElementText}: именно её стоит развивать, чтобы ситуация не перекосилась в одну сторону. Положение Солнца описывает вашу базовую волю, Луна — эмоциональную правду, а Асцендент — то, как вы входите в обстоятельства и как вас считывают другие. Поэтому ответ карты не просто «да» или «нет», а рекомендация: сначала вернуть себе ясность, затем действовать последовательно и не пытаться контролировать всё сразу.
+
+Практический совет
+1. Сформулируйте, какого результата вы хотите именно по этому вопросу.
+2. Сделайте один конкретный шаг в ближайшие 24–48 часов.
+3. Не принимайте решение на пике эмоций — дайте себе паузу и проверьте факты.
+4. Если в вопросе участвует другой человек, говорите прямо, но без давления.`;
+  }
+
+  return `Ваша натальная карта, ${name}, показывает сочетание Солнца в ${sunS.n}, Луны в ${moonS.n} и Асцендента в ${ascS.n}. ${SUN_TEXT[chart.sun]} ${MOON_TEXT[chart.moon]} ${ASC_TEXT[chart.asc]} Ведущая стихия карты — ${topElementText}, поэтому именно через её качества вам проще раскрывать потенциал. Зона роста — ${weakElementText}: развивая её, вы становитесь устойчивее и свободнее в решениях.`;
+}
+
 function Back({ onClick }: { onClick: () => void }) {
   return (
     <button onClick={onClick} style={{ background:'var(--panel)', border:'1px solid var(--gold-line)',
@@ -206,19 +236,27 @@ interface NatalScreenProps {
 
 export function NatalScreen({ onBack, onBalanceUpdate }: NatalScreenProps) {
   const [stage, setStage] = useState<'form'|'result'>('form');
-  const [form, setForm] = useState({ name:'', date:'', time:'', city:'' });
+  const [form, setForm] = useState({ name:'', date:'', time:'', city:'', question:'' });
   const [build, setBuild] = useState(0);
   const [chart, setChart] = useState<NatalResult | null>(null);
   const [apiError, setApiError] = useState('');
+  const [natalInterpretation, setNatalInterpretation] = useState('');
+  const [natalLoading, setNatalLoading] = useState(false);
   const set = (k: string, v: string) => setForm(f => ({...f, [k]: v}));
 
   const goResult = async () => {
     const localChart = computeNatal({ name: form.name, date: form.date, time: form.time, place: form.city });
     setChart(localChart);
+    setNatalInterpretation(buildLocalNatalInterpretation(localChart, form));
+    setApiError('');
+    setNatalLoading(true);
     setStage('result');
-    // Background: save to server and charge
+    // Background: save to server and charge, get AI interpretation
     try {
-      const resp = await api.createNatal(form.name, form.date, form.time, form.city) as { balance?: number };
+      const resp = await api.createNatal(form.name, form.date, form.time, form.city, form.question) as { balance?: number; natalInterpretation?: string };
+      if (resp.natalInterpretation) {
+        setNatalInterpretation(resp.natalInterpretation);
+      }
       if (onBalanceUpdate && typeof resp.balance === 'number') {
         onBalanceUpdate(resp.balance);
       }
@@ -229,6 +267,8 @@ export function NatalScreen({ onBack, onBalanceUpdate }: NatalScreenProps) {
         setStage('form');
         setChart(null);
       }
+    } finally {
+      setNatalLoading(false);
     }
   };
 
@@ -245,19 +285,53 @@ export function NatalScreen({ onBack, onBalanceUpdate }: NatalScreenProps) {
     return () => { clearInterval(iv); clearTimeout(done); };
   }, [stage]);
 
-  const field = (label: string, k: string, type = 'text', ph = '') => (
-    <div>
-      <div style={{ fontSize:12, color:'var(--gold)', letterSpacing:1, marginBottom:6 }}>{label}</div>
-      <input type={type} value={(form as Record<string, string>)[k]} placeholder={ph}
-        onChange={e => set(k, e.target.value)}
-        style={{ width:'100%', background:'var(--panel)', border:'1px solid var(--gold-line)', borderRadius:13,
-          padding:'13px 15px', color:'var(--text)', fontSize:15.5, outline:'none' }} />
-    </div>
-  );
+  const formatFieldValue = (k: string, type: string, ph = '') => {
+    const value = (form as Record<string, string>)[k];
+    if (!value) return ph;
+    if (type === 'date') {
+      const d = new Date(`${value}T00:00:00`);
+      return Number.isNaN(d.getTime())
+        ? value
+        : d.toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' });
+    }
+    return value;
+  };
+
+  const inputBase = {
+    width:'100%', background:'var(--panel)', border:'1px solid var(--gold-line)', borderRadius:13,
+    height:56, padding:'0 15px', color:'var(--text)', fontSize:15.5, outline:'none', boxSizing:'border-box' as const,
+    maxWidth:'100%', minWidth:0, display:'block', fontFamily:'Jost, sans-serif', textAlign:'left' as const,
+  };
+
+  const field = (label: string, k: string, type = 'text', ph = '') => {
+    const nativePicker = type === 'date' || type === 'time';
+    const value = (form as Record<string, string>)[k];
+
+    return (
+      <div style={{ width:'100%', minWidth:0 }}>
+        <div style={{ fontSize:12, color:'var(--gold)', letterSpacing:1, marginBottom:6 }}>{label}</div>
+        {nativePicker ? (
+          <div style={{ ...inputBase, position:'relative', display:'flex', alignItems:'center', overflow:'hidden' }}>
+            <span style={{ color: value ? 'var(--text)' : 'var(--muted)', pointerEvents:'none', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+              {formatFieldValue(k, type, ph || (type === 'date' ? 'Выберите дату' : 'Выберите время'))}
+            </span>
+            <input type={type} value={value}
+              onChange={e => set(k, e.target.value)}
+              style={{ position:'absolute', inset:0, width:'100%', height:'100%', opacity:0,
+                border:0, padding:0, margin:0, cursor:'pointer', boxSizing:'border-box' }} />
+          </div>
+        ) : (
+          <input type={type} value={value} placeholder={ph}
+            onChange={e => set(k, e.target.value)}
+            style={inputBase} />
+        )}
+      </div>
+    );
+  };
 
   if (stage === 'form') {
     return (
-      <div style={{ flex:1, display:'flex', flexDirection:'column', padding:'8px 20px 26px' }}>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', padding:'8px 20px 26px', overflowY:'auto' }}>
         <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:18 }}>
           <Back onClick={onBack} />
           <div style={{ fontFamily:'Marcellus, serif', fontSize:18, color:'var(--text)' }}>Натальная карта</div>
@@ -274,6 +348,7 @@ export function NatalScreen({ onBack, onBalanceUpdate }: NatalScreenProps) {
           {field('Дата рождения', 'date', 'date')}
           {field('Время рождения', 'time', 'time')}
           {field('Город рождения', 'city', 'text', 'Москва')}
+          {field('Ваш вопрос к карте', 'question', 'text', 'Что хотите понять о будущем или ситуации?')}
         </div>
         {apiError && (
           <div style={{ marginTop:12, padding:'10px 14px', borderRadius:10,
@@ -321,6 +396,29 @@ export function NatalScreen({ onBack, onBalanceUpdate }: NatalScreenProps) {
 
           <SectionLabel>Баланс стихий</SectionLabel>
           <ElementBalance elements={ch.elements} />
+
+          {natalLoading && form.question.trim() && !natalInterpretation && (
+            <>
+              <SectionLabel>Ответ на ваш вопрос</SectionLabel>
+              <div style={{ padding:'14px 16px', borderRadius:16, background:'rgba(255,215,0,.06)',
+                border:'1px solid var(--gold-line)',
+                fontFamily:'Cormorant Garamond, serif', fontSize:16, color:'var(--muted)', lineHeight:1.55 }}>
+                ✨ Готовлю персональный ответ по вашему вопросу и натальной карте...
+              </div>
+            </>
+          )}
+
+          {natalInterpretation && (
+            <>
+              <SectionLabel>{form.question.trim() ? 'Ответ на ваш вопрос' : 'Персональная трактовка'}</SectionLabel>
+              <div style={{ padding:'14px 16px', borderRadius:16, background:'rgba(255,215,0,.06)',
+                border:'1px solid var(--gold-line)',
+                fontFamily:'Cormorant Garamond, serif', fontSize:16, color:'var(--text)', lineHeight:1.55,
+                whiteSpace:'pre-wrap' }}>
+                {natalInterpretation}
+              </div>
+            </>
+          )}
 
           <SectionLabel>Планеты в знаках</SectionLabel>
           {PLANET_DEFS.map(p => {

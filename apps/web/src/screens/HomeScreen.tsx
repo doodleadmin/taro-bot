@@ -25,7 +25,7 @@ function SpreadCover({ id, w }: { id: string; w: number }) {
 
 function priceInfo(t: Spread, freeAvailable: boolean) {
   if (t.price === 0) return { free: true, text: 'Бесплатно', was: undefined };
-  if (t.free1card && freeAvailable) return { free: true, text: 'Бесплатно сегодня', was: `${t.price} ₽` };
+  if (freeAvailable) return { free: true, text: 'Бесплатно', was: `${t.price} ₽` };
   return { free: false, text: `${t.price} ₽`, was: undefined };
 }
 
@@ -47,6 +47,7 @@ function PriceTag({ info, accent, compact }: { info: ReturnType<typeof priceInfo
 }
 
 function TopBar({ balance, onBalance }: { balance: number; onBalance: () => void }) {
+  const balanceLabel = Number.isFinite(balance) ? `${balance} ₽` : '∞ ₽';
   return (
     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'4px 20px 14px' }}>
       <div style={{ display:'flex', alignItems:'center', gap:9 }}>
@@ -61,7 +62,7 @@ function TopBar({ balance, onBalance }: { balance: number; onBalance: () => void
       <button onClick={onBalance} style={{ display:'flex', alignItems:'center', gap:8,
         padding:'8px 8px 8px 14px', borderRadius:22, cursor:'pointer',
         background:'var(--panel)', border:'1px solid var(--gold-line)' }}>
-        <span style={{ fontFamily:'Marcellus, serif', fontSize:16, color:'var(--gold)', lineHeight:1 }}>{balance} ₽</span>
+        <span style={{ fontFamily:'Marcellus, serif', fontSize:16, color:'var(--gold)', lineHeight:1 }}>{balanceLabel}</span>
         <span style={{ display:'grid', placeItems:'center', width:26, height:26, borderRadius:14,
           background:'linear-gradient(135deg,var(--gold),var(--gold-deep))', color:'var(--on-gold)' }}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
@@ -207,14 +208,17 @@ function SocialLinks() {
 interface HomeScreenProps {
   balance: number;
   freeAvailable: boolean;
+  introFreeRemaining: number;
+  dailyFreeAvailableToday: boolean;
   dayCard: Card;
   dayRevealed: boolean;
+  dayInterpretation: string;
   onRevealDay: () => void;
   onStart: (id: SpreadId) => void;
   onBalance: () => void;
 }
 
-export function HomeScreen({ balance, freeAvailable, dayCard, dayRevealed, onRevealDay, onStart, onBalance }: HomeScreenProps) {
+export function HomeScreen({ balance, freeAvailable, introFreeRemaining, dailyFreeAvailableToday, dayCard, dayRevealed, dayInterpretation, onRevealDay, onStart, onBalance }: HomeScreenProps) {
   const simple = [SPREADS.yesno, SPREADS.question, SPREADS.love, SPREADS.situation, SPREADS.match, SPREADS.money];
   const big = [SPREADS.celtic, SPREADS.year, SPREADS.natal];
   return (
@@ -243,6 +247,22 @@ export function HomeScreen({ balance, freeAvailable, dayCard, dayRevealed, onRev
               {dayRevealed ? dayCard.key : 'Коснитесь карты, чтобы узнать энергию дня'}</div>
           </div>
         </div>
+        {dayRevealed && (
+          dayInterpretation ? (
+            <div className="screen-in" style={{ marginTop:10, padding:'14px 16px', borderRadius:16,
+              background:'var(--panel)', border:'1px solid var(--gold-line)',
+              fontFamily:'Cormorant Garamond, serif', fontSize:16, color:'var(--text)', lineHeight:1.45 }}>
+              {dayInterpretation}
+            </div>
+          ) : (
+            <div className="screen-in" style={{ marginTop:10, padding:'14px 16px', borderRadius:16,
+              background:'var(--panel)', border:'1px solid var(--gold-line)',
+              textAlign:'center' }}>
+              <span style={{ fontFamily:'Cormorant Garamond, serif', fontSize:15, color:'var(--muted)',
+                animation:'pulse 1.8s infinite' }}>✨ Готовлю трактовку карты дня...</span>
+            </div>
+          )
+        )}
       </div>
 
       <Ornament style={{ margin:'18px 0 14px' }} />
@@ -250,7 +270,11 @@ export function HomeScreen({ balance, freeAvailable, dayCard, dayRevealed, onRev
       <div style={{ padding:'0 20px' }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
           <div style={{ fontFamily:'Marcellus, serif', fontSize:17, color:'var(--text)', letterSpacing:.5 }}>Расклады Таро</div>
-          {freeAvailable && <span style={{ fontSize:11, color:'#7fe0b4' }}>1 бесплатный сегодня</span>}
+          {freeAvailable && (
+            <span style={{ fontSize:11, color:'#7fe0b4' }}>
+              {introFreeRemaining > 0 ? `${introFreeRemaining} подарочных` : dailyFreeAvailableToday ? '1 бесплатный сегодня' : 'Бесплатно'}
+            </span>
+          )}
         </div>
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
           {simple.map((t, i) => <FreeBanner key={t.id} t={t} i={i} onStart={onStart} freeAvailable={freeAvailable} />)}
